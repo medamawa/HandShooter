@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import numpy as np
+import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -151,7 +152,19 @@ def close_check_by_distance(keypoints, center): #tested OK
 def calibration(step, image, keypoints):
     print("Calibrating...")
 
+    if step == 0:
+        print("Please open your hand.")
+        cv2.putText(image, "Please open your hand.", (100, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
+        if open_check_by_distance(keypoints, keypoints[0]):
+            step = 1
 
+
+# 一コマのうちに20度以上指を動かしたら撃つと判定する
+def is_shot(prev_angle, angle):
+    if angle - prev_angle > 20 or (prev_angle > 270 and angle < 90 and 360 + angle - prev_angle > 20):
+        return True
+    else:
+        return False
 
 
 # 人差し指の先端と付け根の角度を取得する
@@ -179,9 +192,33 @@ def get_angle(relative_keypoints):
     return round(angle, 1)
 
 
+def put_text_with_background(image, text, point, font, size, color, thickness, background_color):
+    #背景を描く
+    (width, height), baseline= cv2.getTextSize(text, font, size, thickness)
+    top_left_point = (point[0], point[1] - height)
+    bottom_right_point = (point[0] + width, point[1])
+    image = cv2.rectangle(image, top_left_point, bottom_right_point, background_color, -1)
+
+    #textを書く
+    image = cv2.putText(image, text, point, font, size, color, thickness)
+
+    return image
+
+
+def put_debug_text(image, keypoints, relative_keypoints):
+    # 人差し指の付け根
+    place1 = (int((keypoints[5][0])), int((keypoints[5][1])))
+    cv2.putText(image, f'// {get_angle(relative_keypoints)}', place1, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
+    # 人差し指の先端
+    place2 = (int((keypoints[8][0])), int((keypoints[8][1])))
+    cv2.putText(image, f'[{float(relative_keypoints[8][0])}, {float(relative_keypoints[8][1])}, {float(relative_keypoints[8][2])}]', place2, cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 255), 3)
+
+
 def main():
-    cap = cv2.VideoCapture(0)
     calibration_step = 0
+    init_flag = True
+    shot_flag = False
+    cap = cv2.VideoCapture(0)
 
     with mp_hands.Hands(
         model_complexity=0,
@@ -206,13 +243,27 @@ def main():
             if keypoints != 0:
                 # 人差し指の付け根を原点とする相対座標を取得
                 relative_keypoints = relative_coordinates(keypoints)
+                angle = get_angle(relative_keypoints)
 
-                # 人差し指の付け根
-                place1 = (int((keypoints[5][0])), int((keypoints[5][1])))
-                cv2.putText(image, f'// {get_angle(relative_keypoints)}', place1, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
-                # 人差し指の先端
-                place2 = (int((keypoints[8][0])), int((keypoints[8][1])))
-                cv2.putText(image, f'[{float(relative_keypoints[8][0])}, {float(relative_keypoints[8][1])}, {float(relative_keypoints[8][2])}]', place2, cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 255), 3)
+
+
+                # 初期化
+                if init_flag:
+                    prev_relative_keypoints = relative_keypoints
+                    prev_angle = angle
+                    init_flag = False
+
+                if is_shot(prev_angle, angle):
+                    print("Shot!")
+                    put_text_with_background(image, "Shot!", (100, 300), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+
+                # デバッグ用のテキストを描画
+                put_debug_text(image, keypoints, relative_keypoints)
+
+                prev_relative_keypoints = relative_keypoints
+                prev_angle = angle
+            else:
+                init_flag = True
 
 
             # 検出された手の骨格をカメラ画像に重ねて描画
@@ -231,6 +282,7 @@ def main():
             
             cv2.namedWindow("Hand Shooter", cv2.WND_PROP_FULLSCREEN)
             cv2.setWindowProperty("Hand Shooter", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            put_text_with_background(image, "Hand Shooter", (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
             cv2.imshow("Hand Shooter", image)
 
             if cv2.waitKey(5) & 0xFF == 27:
