@@ -148,6 +148,12 @@ def close_check_by_distance(keypoints, center): #tested OK
        return False
 
 
+def calibration(step, image, keypoints):
+    print("Calibrating...")
+
+
+
+
 # 人差し指の先端と付け根の角度を取得する
 def get_angle(relative_keypoints):
     if relative_keypoints == 0:
@@ -175,6 +181,7 @@ def get_angle(relative_keypoints):
 
 def main():
     cap = cv2.VideoCapture(0)
+    calibration_step = 0
 
     with mp_hands.Hands(
         model_complexity=0,
@@ -192,9 +199,12 @@ def main():
             image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
             results = hands.process(image)
 
+            # 関節の絶対座標wを取得
             keypoints = take_coordinates(results.multi_hand_landmarks, image)
 
+            # 手を正しく認識できている場合は処理を行う
             if keypoints != 0:
+                # 人差し指の付け根を原点とする相対座標を取得
                 relative_keypoints = relative_coordinates(keypoints)
 
                 # 人差し指の付け根
@@ -209,6 +219,7 @@ def main():
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+            # 出力の処理
             if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(
