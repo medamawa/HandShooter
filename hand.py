@@ -7,24 +7,51 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
 
-def take_coordinates(coordinates):
+# 関節のxyz座標を取得する(左上を原点とした絶対座標)
+'''
+0: 手首
+1: 親指 付け根
+2: 親指 第1関節
+3: 親指 第2関節
+4: 親指 先端
+5: 人差し指 付け根 ***
+6: 人差し指 第1関節
+7: 人差し指 第2関節
+8: 人差し指 先端 ***
+9: 中指 付け根
+10: 中指 第1関節
+11: 中指 第2関節
+12: 中指 先端
+13: 薬指 付け根
+14: 薬指 第1関節
+15: 薬指 第2関節
+16: 薬指 先端
+17: 小指 付け根
+18: 小指 第1関節
+19: 小指 第2関節
+20: 小指 先端
+'''
+def take_coordinates(coordinates, image):
     if coordinates == None:
         return 0
+    
+    image_width, image_height = image.shape[1], image.shape[0]
     
     keypoints = []
 
     for data_point in coordinates:
         xyz_datapoints = data_point.landmark
         for xyz in xyz_datapoints:
-            X_value = round(xyz.x*10000, 2)
-            Y_value = round(xyz.y*10000, 2)
+            X_value = round(xyz.x * image_width, 2)
+            Y_value = round(xyz.y * image_height, 2)
             Z_value = round(xyz.z, 3)
-            xy = [X_value,Y_value, Z_value]
-            keypoints.append(xy)
+            xyz = [X_value, Y_value, Z_value]
+            keypoints.append(xyz)
 
     return keypoints
 
 
+# 手ひらの中心座標を取得する
 def centroid_palm(keypoints): 
     if keypoints == 0:
         return 0
@@ -117,6 +144,7 @@ def close_check_by_distance(keypoints, center): #tested OK
        return False
 
 
+# 手のひらの中心点と手首の点から手がどの方向に回っているか
 def get_angle(keypoints, center):
     #(x',y')=(x, max-y)
     if keypoints == 0:
@@ -141,48 +169,56 @@ def get_angle(keypoints, center):
         angle = angle + 180
     return round(angle, 1)
 
+def main():
+    cap = cv2.VideoCapture(0)
 
-cap = cv2.VideoCapture(0)
+    with mp_hands.Hands(
+        model_complexity=0,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5) as hands:
 
-with mp_hands.Hands(
-    model_complexity=0,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5) as hands:
+        while cap.isOpened():
+            success, image = cap.read()
 
-    while cap.isOpened():
-        success, image = cap.read()
+            if not success:
+                print("Ignoring empty camera frame.")
+                continue
 
-        if not success:
-            print("Ignoring empty camera frame.")
-            continue
+            image.flags.writeable = False
+            image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
+            results = hands.process(image)
 
-        image.flags.writeable = False
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results = hands.process(image)
+            keypoints = take_coordinates(results.multi_hand_landmarks, image)
 
-        keypoints = take_coordinates(results.multi_hand_landmarks)
-        if keypoints != 0:
-            place = (int((keypoints[12][0]) / 10), int((keypoints[12][1]) / 15))
-            cv2.putText(image, f'{float(get_angle(keypoints[0], centroid_palm(keypoints)))}', place, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
-        elif keypoints == 0:
-            place = (200, 200)
+            if keypoints != 0:
+                # 人差し指の付け根
+                place1 = (int((keypoints[5][0])), int((keypoints[5][1])))
+                cv2.putText(image, f'[{float(keypoints[5][0])}, {float(keypoints[5][1])}, {float(keypoints[5][2])}]', place1, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
 
-        # 検出された手の骨格をカメラ画像に重ねて描画
-        image.flags.writeable = True
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                # 人差し指の先端
+                place2 = (int((keypoints[8][0])), int((keypoints[8][1])))
+                cv2.putText(image, f'[{float(keypoints[8][0])}, {float(keypoints[8][1])}, {float(keypoints[8][2])}]', place2, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3)
 
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                mp_drawing.draw_landmarks(
-                    image,
-                    hand_landmarks,
-                    mp_hands.HAND_CONNECTIONS,
-                    mp_drawing_styles.get_default_hand_landmarks_style(),
-                    mp_drawing_styles.get_default_hand_connections_style())
-                
-        cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
 
-        if cv2.waitKey(5) & 0xFF == 27:
-            break
+            # 検出された手の骨格をカメラ画像に重ねて描画
+            image.flags.writeable = True
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-cap.release()
+            if results.multi_hand_landmarks:
+                for hand_landmarks in results.multi_hand_landmarks:
+                    mp_drawing.draw_landmarks(
+                        image,
+                        hand_landmarks,
+                        mp_hands.HAND_CONNECTIONS,
+                        mp_drawing_styles.get_default_hand_landmarks_style(),
+                        mp_drawing_styles.get_default_hand_connections_style())
+                    
+            cv2.imshow('MediaPipe Hands', image)
+
+            if cv2.waitKey(5) & 0xFF == 27:
+                break
+
+    cap.release()
+
+if __name__ == "__main__":
+    main()
