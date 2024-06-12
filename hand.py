@@ -51,17 +51,18 @@ def take_coordinates(coordinates, image):
     return keypoints
 
 
-# 手ひらの中心座標を取得する
-def centroid_palm(keypoints): 
-    if keypoints == 0:
-        return 0
-    
-    x_bar = (keypoints[0][0] + keypoints[9][0])/2
-    x_bar = round(x_bar, 2)
-    y_bar = (keypoints[0][1] + keypoints[9][1])/2
-    y_bar = round(y_bar, 2)
+# 人差し指の付け根を原点とする相対座標を取得する
+def relative_coordinates(keypoints):
+    x = keypoints[5][0]
+    y = keypoints[5][1]
+    z = keypoints[5][2]
 
-    return x_bar, y_bar
+    relative_keypoints = []
+
+    for i in range(len(keypoints)):
+        relative_keypoints.append([round(keypoints[i][0] - x, 2), round(keypoints[i][1] - y, 2), round(keypoints[i][2] - z, 3)])
+
+    return relative_keypoints
 
 
 def open_check_by_distance(keypoints, center):
@@ -169,6 +170,7 @@ def get_angle(keypoints, center):
         angle = angle + 180
     return round(angle, 1)
 
+
 def main():
     cap = cv2.VideoCapture(0)
 
@@ -191,13 +193,14 @@ def main():
             keypoints = take_coordinates(results.multi_hand_landmarks, image)
 
             if keypoints != 0:
+                relative_keypoints = relative_coordinates(keypoints)
+
                 # 人差し指の付け根
                 place1 = (int((keypoints[5][0])), int((keypoints[5][1])))
-                cv2.putText(image, f'[{float(keypoints[5][0])}, {float(keypoints[5][1])}, {float(keypoints[5][2])}]', place1, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
-
+                cv2.putText(image, f'[{float(relative_keypoints[5][0])}, {float(relative_keypoints[5][1])}, {float(relative_keypoints[5][2])}]', place1, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
                 # 人差し指の先端
                 place2 = (int((keypoints[8][0])), int((keypoints[8][1])))
-                cv2.putText(image, f'[{float(keypoints[8][0])}, {float(keypoints[8][1])}, {float(keypoints[8][2])}]', place2, cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 3)
+                cv2.putText(image, f'[{float(relative_keypoints[8][0])}, {float(relative_keypoints[8][1])}, {float(relative_keypoints[8][2])}]', place2, cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 255), 3)
 
 
             # 検出された手の骨格をカメラ画像に重ねて描画
