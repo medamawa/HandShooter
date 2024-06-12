@@ -215,8 +215,10 @@ def main():
                         mp_hands.HAND_CONNECTIONS,
                         mp_drawing_styles.get_default_hand_landmarks_style(),
                         mp_drawing_styles.get_default_hand_connections_style())
-                    
-            cv2.imshow('MediaPipe Hands', image)
+            
+            cv2.namedWindow("Hand Shooter", cv2.WND_PROP_FULLSCREEN)
+            cv2.setWindowProperty("Hand Shooter", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            cv2.imshow("Hand Shooter", image)
 
             if cv2.waitKey(5) & 0xFF == 27:
                 break
