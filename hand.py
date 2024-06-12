@@ -53,6 +53,9 @@ def take_coordinates(coordinates, image):
 
 # 人差し指の付け根を原点とする相対座標を取得する
 def relative_coordinates(keypoints):
+    if keypoints == 0:
+        return 0
+    
     x = keypoints[5][0]
     y = keypoints[5][1]
     z = keypoints[5][2]
@@ -145,29 +148,28 @@ def close_check_by_distance(keypoints, center): #tested OK
        return False
 
 
-# 手のひらの中心点と手首の点から手がどの方向に回っているか
-def get_angle(keypoints, center):
-    #(x',y')=(x, max-y)
-    if keypoints == 0:
+# 人差し指の先端と付け根の角度を取得する
+def get_angle(relative_keypoints):
+    if relative_keypoints == 0:
         return 0
 
-    center = list(center)
-    wrist = list(keypoints)
-    wrist[1] = 10000-wrist[1] # y' = max - y
-    center[1] = 10000-center[1] # y' = max - y
-    Y = center[1]-wrist[1]
-    X = center[0]-wrist[0]
+    X = relative_keypoints[8][0]
+    Y = relative_keypoints[8][1]
+
     try:
         m = Y/X
     except ZeroDivisionError:
         m = 0
-    angle = np.arctan(m)*180/(np.pi)
+    
+    angle = np.arctan(m) * 180 / (np.pi)
+
     if X > 0 and Y < 0:
         angle = angle + 360
     elif X < 0 and Y > 0:
         angle = angle + 180
     elif X < 0 and Y < 0:
         angle = angle + 180
+    
     return round(angle, 1)
 
 
@@ -197,7 +199,7 @@ def main():
 
                 # 人差し指の付け根
                 place1 = (int((keypoints[5][0])), int((keypoints[5][1])))
-                cv2.putText(image, f'[{float(relative_keypoints[5][0])}, {float(relative_keypoints[5][1])}, {float(relative_keypoints[5][2])}]', place1, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
+                cv2.putText(image, f'// {get_angle(relative_keypoints)}', place1, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
                 # 人差し指の先端
                 place2 = (int((keypoints[8][0])), int((keypoints[8][1])))
                 cv2.putText(image, f'[{float(relative_keypoints[8][0])}, {float(relative_keypoints[8][1])}, {float(relative_keypoints[8][2])}]', place2, cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 255), 3)
