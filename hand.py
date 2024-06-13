@@ -9,30 +9,30 @@ mp_hands = mp.solutions.hands
 
 
 # 関節のxyz座標を取得する(左上を原点とした絶対座標)
-'''
-0: 手首
-1: 親指 付け根
-2: 親指 第1関節
-3: 親指 第2関節
-4: 親指 先端
-5: 人差し指 付け根 ***
-6: 人差し指 第1関節
-7: 人差し指 第2関節
-8: 人差し指 先端 ***
-9: 中指 付け根
-10: 中指 第1関節
-11: 中指 第2関節
-12: 中指 先端
-13: 薬指 付け根
-14: 薬指 第1関節
-15: 薬指 第2関節
-16: 薬指 先端
-17: 小指 付け根
-18: 小指 第1関節
-19: 小指 第2関節
-20: 小指 先端
-'''
 def take_coordinates(coordinates, image):
+    '''
+    0: 手首
+    1: 親指 付け根
+    2: 親指 第1関節
+    3: 親指 第2関節
+    4: 親指 先端
+    5: 人差し指 付け根 ***
+    6: 人差し指 第1関節
+    7: 人差し指 第2関節
+    8: 人差し指 先端 ***
+    9: 中指 付け根
+    10: 中指 第1関節
+    11: 中指 第2関節
+    12: 中指 先端
+    13: 薬指 付け根
+    14: 薬指 第1関節
+    15: 薬指 第2関節
+    16: 薬指 先端
+    17: 小指 付け根
+    18: 小指 第1関節
+    19: 小指 第2関節
+    20: 小指 先端
+    '''
     if coordinates == None:
         return 0
     
@@ -171,6 +171,23 @@ def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
         return False
 
 
+# 指定された座標にターゲットを描画する
+# x, y: ターゲットの中心座標
+def put_target(image, point):
+    target_image = cv2.imread("resources/target.png", cv2.IMREAD_UNCHANGED)
+    target_image = cv2.cvtColor(target_image, cv2.COLOR_BGRA2RGBA)
+    target_image = cv2.resize(target_image, (100, 100))
+
+    # 貼り付け先座標の設定
+    x1 = max(point[0] - int(target_image.shape[1]/2), 0)
+    y1 = max(point[1] - int(target_image.shape[0]/2), 0)
+    x2 = x1 + target_image.shape[1]
+    y2 = y1 + target_image.shape[0]
+
+    # 合成
+    image[y1:y2, x1:x2] = image[y1:y2, x1:x2] * (1 - target_image[:, :, 3:] / 255) + target_image[:, :, :3] * (target_image[:, :, 3:] / 255)
+
+
 # 人差し指の先端と付け根の角度を取得する
 def get_angle(relative_keypoints):
     if relative_keypoints == 0:
@@ -271,6 +288,8 @@ def main():
             
             # 関節認識処理終了時の時刻を取得
             now = time.time()
+
+            put_target(image, (100, 100))
             
             # 打ってから0.5秒間は"Shot!"と表示する
             if shot_flag or now - shot_time < 0.5:
