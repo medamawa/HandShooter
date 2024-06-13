@@ -216,6 +216,10 @@ def put_debug_text(image, keypoints, relative_keypoints):
     place2 = (int((keypoints[8][0])), int((keypoints[8][1])))
     cv2.putText(image, f'[{float(relative_keypoints[8][0])}, {float(relative_keypoints[8][1])}, {float(relative_keypoints[8][2])}]', place2, cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 255), 3)
 
+    place3 = ((place2[0] - place1[0]) * 3 + place1[0], (place2[1] - place1[1]) * 3 + place1[1])
+
+    image = cv2.line(image, place1, place3, (0, 255, 0), 3)
+
 
 def main():
     calibration_step = 0
