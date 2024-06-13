@@ -176,7 +176,7 @@ def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
 def put_target(image, point):
     target_image = cv2.imread("resources/target.png", cv2.IMREAD_UNCHANGED)
     target_image = cv2.cvtColor(target_image, cv2.COLOR_BGRA2RGBA)
-    target_image = cv2.resize(target_image, (100, 100))
+    target_image = cv2.resize(target_image, (200, 200))
 
     # 貼り付け先座標の設定
     x1 = max(point[0] - int(target_image.shape[1]/2), 0)
@@ -289,14 +289,14 @@ def main():
             # 関節認識処理終了時の時刻を取得
             now = time.time()
 
-            put_target(image, (100, 100))
+            put_target(image, (500, 400))
             
             # 打ってから0.5秒間は"Shot!"と表示する
             if shot_flag or now - shot_time < 0.5:
                 if shot_flag:
                     shot_time = now
                 
-                put_text_with_background(image, "Shot!", (100, 300), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                put_text_with_background(image, "Bang!", (100, 300), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
 
             # 検出された手の骨格をカメラ画像に重ねて描画
             image.flags.writeable = True
