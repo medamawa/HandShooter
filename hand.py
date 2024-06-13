@@ -225,6 +225,7 @@ def main():
     calibration_step = 0
     init_flag = True
     shot_flag = False
+    shot_time = 0
     cap = cv2.VideoCapture(0)
 
     with mp_hands.Hands(
@@ -252,17 +253,13 @@ def main():
                 relative_keypoints = relative_coordinates(keypoints)
                 angle = get_angle(relative_keypoints)
 
-
-
                 # 初期化
                 if init_flag:
                     prev_relative_keypoints = relative_keypoints
                     prev_angle = angle
                     init_flag = False
-
-                if is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
-                    print("Shot!")
-                    put_text_with_background(image, "Shot!", (100, 300), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                
+                shot_flag = is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
 
                 # デバッグ用のテキストを描画
                 put_debug_text(image, keypoints, relative_keypoints)
@@ -271,7 +268,16 @@ def main():
                 prev_angle = angle
             else:
                 init_flag = True
-
+            
+            # 関節認識処理終了時の時刻を取得
+            now = time.time()
+            
+            # 打ってから0.5秒間は"Shot!"と表示する
+            if shot_flag or now - shot_time < 0.5:
+                if shot_flag:
+                    shot_time = now
+                
+                put_text_with_background(image, "Shot!", (100, 300), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
 
             # 検出された手の骨格をカメラ画像に重ねて描画
             image.flags.writeable = True
