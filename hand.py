@@ -172,20 +172,36 @@ def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
 
 
 # 指定された座標にターゲットを描画する
-# x, y: ターゲットの中心座標
+# point(x, y): ターゲットの中心座標
 def put_target(image, point):
     target_image = cv2.imread("resources/target.png", cv2.IMREAD_UNCHANGED)
     target_image = cv2.cvtColor(target_image, cv2.COLOR_BGRA2RGBA)
     target_image = cv2.resize(target_image, (200, 200))
 
+    put_image(image, target_image, point)
+
+
+# 指定された座標にtarget_bangを描画する
+# point(x, y): target_bangの中心座標
+def put_bang(image, point):
+    bang_image = cv2.imread("resources/target_bang.png", cv2.IMREAD_UNCHANGED)
+    bang_image = cv2.cvtColor(bang_image, cv2.COLOR_BGRA2RGBA)
+    bang_image = cv2.resize(bang_image, (200, 200))
+
+    put_image(image, bang_image, point)
+
+
+# 指定された座標に任意の画像を描画する
+# point(x, y): 画像の中心座標
+def put_image(base_image, image, point):
     # 貼り付け先座標の設定
-    x1 = max(point[0] - int(target_image.shape[1]/2), 0)
-    y1 = max(point[1] - int(target_image.shape[0]/2), 0)
-    x2 = x1 + target_image.shape[1]
-    y2 = y1 + target_image.shape[0]
+    x1 = max(point[0] - int(image.shape[1]/2), 0)
+    y1 = max(point[1] - int(image.shape[0]/2), 0)
+    x2 = x1 + image.shape[1]
+    y2 = y1 + image.shape[0]
 
     # 合成
-    image[y1:y2, x1:x2] = image[y1:y2, x1:x2] * (1 - target_image[:, :, 3:] / 255) + target_image[:, :, :3] * (target_image[:, :, 3:] / 255)
+    base_image[y1:y2, x1:x2] = base_image[y1:y2, x1:x2] * (1 - image[:, :, 3:] / 255) + image[:, :, :3] * (image[:, :, 3:] / 255)
 
 
 # 人差し指の先端と付け根の角度を取得する
@@ -288,15 +304,17 @@ def main():
             
             # 関節認識処理終了時の時刻を取得
             now = time.time()
-
-            put_target(image, (500, 400))
             
             # 打ってから0.5秒間は"Shot!"と表示する
             if shot_flag or now - shot_time < 0.5:
                 if shot_flag:
                     shot_time = now
                 
-                put_text_with_background(image, "Bang!", (100, 300), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                put_bang(image, (500, 400))
+                
+                put_text_with_background(image, "Bang!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+            else:
+                put_target(image, (500, 400))
 
             # 検出された手の骨格をカメラ画像に重ねて描画
             image.flags.writeable = True
