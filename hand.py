@@ -176,7 +176,7 @@ def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
 def put_target(image, point):
     target_image = cv2.imread("resources/target.png", cv2.IMREAD_UNCHANGED)
     target_image = cv2.cvtColor(target_image, cv2.COLOR_BGRA2RGBA)
-    target_image = cv2.resize(target_image, (200, 200))
+    target_image = cv2.resize(target_image, (250, 250))
 
     put_image(image, target_image, point)
 
@@ -186,7 +186,7 @@ def put_target(image, point):
 def put_bang(image, point):
     bang_image = cv2.imread("resources/target_bang.png", cv2.IMREAD_UNCHANGED)
     bang_image = cv2.cvtColor(bang_image, cv2.COLOR_BGRA2RGBA)
-    bang_image = cv2.resize(bang_image, (200, 200))
+    bang_image = cv2.resize(bang_image, (250, 250))
 
     put_image(image, bang_image, point)
 
