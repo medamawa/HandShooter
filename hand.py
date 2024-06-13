@@ -158,10 +158,14 @@ def calibration(step, image, keypoints):
         if open_check_by_distance(keypoints, keypoints[0]):
             step = 1
 
+# 射撃判定
+def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
 
-# 一コマのうちに20度以上指を動かしたら撃つと判定する
-def is_shot(prev_angle, angle):
-    if angle - prev_angle > 20 or (prev_angle > 270 and angle < 90 and 360 + angle - prev_angle > 20):
+    # 一コマのうちに20度以上指を動かしたら撃つと判定する
+    if abs(prev_angle) - abs(angle) >= 20:
+        return True
+    # この判定法はキャリブレーションが必要、、、
+    elif abs(prev_angle) < 10 and prev_relative_keypoints[8][1] - relative_keypoints[8][1] >= 10:
         return True
     else:
         return False
@@ -182,12 +186,11 @@ def get_angle(relative_keypoints):
     
     angle = np.arctan(m) * 180 / (np.pi)
 
-    if X > 0 and Y < 0:
-        angle = angle + 360
-    elif X < 0 and Y > 0:
-        angle = angle + 180
-    elif X < 0 and Y < 0:
-        angle = angle + 180
+    # 上方向を0度として、-180度から180度の範囲になるように変換
+    if X > 0:
+        angle = angle + 90
+    elif X <= 0:
+        angle = angle - 90
     
     return round(angle, 1)
 
@@ -253,7 +256,7 @@ def main():
                     prev_angle = angle
                     init_flag = False
 
-                if is_shot(prev_angle, angle):
+                if is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
                     print("Shot!")
                     put_text_with_background(image, "Shot!", (100, 300), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
 
@@ -289,6 +292,7 @@ def main():
                 break
 
     cap.release()
+
 
 if __name__ == "__main__":
     main()
