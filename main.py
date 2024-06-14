@@ -3,6 +3,8 @@ import mediapipe as mp
 import numpy as np
 import time
 
+import utils
+
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
@@ -69,6 +71,7 @@ def relative_coordinates(keypoints):
     return relative_keypoints
 
 
+# キャリブレーション処理
 def calibration(step, image, keypoints):
     print("Calibrating...")
 
@@ -116,7 +119,7 @@ def put_target(image, point, size):
     target_image = cv2.cvtColor(target_image, cv2.COLOR_BGRA2RGBA)
     target_image = cv2.resize(target_image, image_size)
 
-    put_image(image, target_image, point)
+    utils.put_image(image, target_image, point)
 
 
 # 指定された座標にtarget_bangを描画する
@@ -131,20 +134,7 @@ def put_bang(image, point, size):
     bang_image = cv2.cvtColor(bang_image, cv2.COLOR_BGRA2RGBA)
     bang_image = cv2.resize(bang_image, image_size)
 
-    put_image(image, bang_image, point)
-
-
-# 指定された座標に任意の画像を描画する
-# point(x, y): 画像の中心座標
-def put_image(base_image, image, point):
-    # 貼り付け先座標の設定
-    x1 = max(point[0] - int(image.shape[1]/2), 0)
-    y1 = max(point[1] - int(image.shape[0]/2), 0)
-    x2 = x1 + image.shape[1]
-    y2 = y1 + image.shape[0]
-
-    # 合成
-    base_image[y1:y2, x1:x2] = base_image[y1:y2, x1:x2] * (1 - image[:, :, 3:] / 255) + image[:, :, :3] * (image[:, :, 3:] / 255)
+    utils.put_image(image, bang_image, point)
 
 
 # 人差し指の先端と付け根の角度を取得する
@@ -171,22 +161,18 @@ def get_angle(relative_keypoints):
     return round(angle, 1)
 
 
-# テキストを背景付きで描画する(便利関数)
-def put_text_with_background(image, text, point, font, size, color, thickness, background_color):
-    #背景を描く
-    (width, height), baseline= cv2.getTextSize(text, font, size, thickness)
-    top_left_point = (point[0], point[1] - height)
-    bottom_right_point = (point[0] + width, point[1])
-    image = cv2.rectangle(image, top_left_point, bottom_right_point, background_color, -1)
-
-    #textを書く
-    image = cv2.putText(image, text, point, font, size, color, thickness)
-
-    return image
-
-
-# デバッグ用のテキストを描画
-def put_debug_text(image, keypoints, relative_keypoints):
+# デバッグ用のグラフィックを描画
+def put_debug_info(image, keypoints, relative_keypoints, results):
+    # 検出された手の骨格をカメラ画像に重ねて描画
+    if results.multi_hand_landmarks:
+        for hand_landmarks in results.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(
+                image,
+                hand_landmarks,
+                mp_hands.HAND_CONNECTIONS,
+                mp_drawing_styles.get_default_hand_landmarks_style(),
+                mp_drawing_styles.get_default_hand_connections_style())
+    
     # 人差し指の付け根
     point1 = (int((keypoints[5][0])), int((keypoints[5][1])))
     cv2.putText(image, f'// {get_angle(relative_keypoints)}', point1, cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
@@ -194,7 +180,10 @@ def put_debug_text(image, keypoints, relative_keypoints):
     point2 = (int((keypoints[8][0])), int((keypoints[8][1])))
     cv2.putText(image, f'[{float(relative_keypoints[8][0])}, {float(relative_keypoints[8][1])}, {float(relative_keypoints[8][2])}]', point2, cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 255), 3)
 
-    # 射線を描画
+
+# 射線を描画
+def put_aim_line(image, keypoints):
+    point1 = (int((keypoints[5][0])), int((keypoints[5][1])))
     aim_point = get_aim_point(keypoints, 3)
     image = cv2.line(image, point1, aim_point, (0, 255, 0), 3)
 
@@ -212,6 +201,41 @@ def get_aim_point(keypoints, range_multiplier):
 
 
 def main():
+    window_name = "Hand Shooter"
+    window_size = (1920, 1080)
+
+    # windowの作成
+    cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+
+    test_img = cv2.imread("resources/target.png")
+    while True:
+        cv2.imshow(window_name, test_img)
+        # 終了処理
+        if cv2.waitKey(0) & 0xFF == 27:
+            break
+
+    # ゲームの開始
+    game(window_name)
+
+
+    # 終了処理
+    full_screen_white = np.ones((window_size[0], window_size[1], 3))*200
+    while True:
+        cv2.imshow(window_name, full_screen_white)
+
+        if cv2.waitKey(0) & 0xFF == 27:
+            break
+
+    
+
+
+
+
+
+
+def game(window_name):
     calibration_step = 0
     init_flag = True
     shot_flag = False
@@ -225,7 +249,7 @@ def main():
     target_size = 100
     range_multiplier = 3
     target_speed = 10
-
+    
 
     with mp_hands.Hands(
         model_complexity=0,
@@ -286,6 +310,8 @@ def main():
                 prev_angle = angle
             else:
                 init_flag = True
+                shot_flag = False
+                hit_flag = False
             
             '''
             4. イベント処理
@@ -312,41 +338,33 @@ def main():
                     if hit_flag:
                         hit_time = now
                     put_bang(image, target_point, target_size)
-                    put_text_with_background(image, "Hit!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    utils.put_text_with_background(image, "Hit!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 else:
                     put_target(image, target_point, target_size)
-                    put_text_with_background(image, "Bang!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    utils.put_text_with_background(image, "Bang!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
             else:
                 put_target(image, target_point, target_size)
+            
+
+            # 出力の処理
+            image.flags.writeable = True
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
 
-            # デバッグ用のテキストを描画
+            # 射線を描画
             if keypoints != 0:
-                put_debug_text(image, keypoints, relative_keypoints)
+                put_aim_line(image, keypoints)
+
+                # デバッグ情報を描画
+                put_debug_info(image, keypoints, relative_keypoints, results)
 
             '''
             5. 画像出力処理
             画像を出力する。
             '''
 
-            # 出力の処理
-            image.flags.writeable = True
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-            # # 検出された手の骨格をカメラ画像に重ねて描画
-            # if results.multi_hand_landmarks:
-            #     for hand_landmarks in results.multi_hand_landmarks:
-            #         mp_drawing.draw_landmarks(
-            #             image,
-            #             hand_landmarks,
-            #             mp_hands.HAND_CONNECTIONS,
-            #             mp_drawing_styles.get_default_hand_landmarks_style(),
-            #             mp_drawing_styles.get_default_hand_connections_style())
-
-            # windowの作成と表示
-            cv2.namedWindow("Hand Shooter", cv2.WND_PROP_FULLSCREEN)
-            cv2.setWindowProperty("Hand Shooter", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-            put_text_with_background(image, "Hand Shooter", (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
+            # タイトルを付けて画像を表示
+            utils.put_text_with_background(image, window_name, (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
             cv2.imshow("Hand Shooter", image)
 
             '''
@@ -366,6 +384,7 @@ def main():
                 break
 
     cap.release()
+
 
 
 if __name__ == "__main__":
