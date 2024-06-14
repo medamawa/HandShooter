@@ -78,7 +78,8 @@ def calibration(step, image, keypoints):
         if is_shot(keypoints, keypoints[0]):
             step = 1
 
-# 射撃判定
+
+# 打ったかどうか判定
 def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
 
     # 一コマのうちに20度以上指を動かしたら撃つと判定する
@@ -86,6 +87,17 @@ def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
         return True
     # この判定法はキャリブレーションが必要、、、
     elif abs(prev_angle) < 10 and prev_relative_keypoints[8][1] - relative_keypoints[8][1] >= 10:
+        return True
+    else:
+        return False
+
+
+# 命中したかどうか判定
+def is_hit(keypoints, range_multiplier, target_point, target_size):
+    aim_point = get_aim_point(keypoints, range_multiplier)
+
+    # 射線とターゲットの距離が一定範囲内にあれば命中と判定
+    if np.linalg.norm(np.array(aim_point) - np.array(target_point)) <= target_size:
         return True
     else:
         return False
@@ -185,12 +197,18 @@ def get_aim_point(keypoints, range_multiplier):
 
     return aim_point
 
+
 def main():
     calibration_step = 0
     init_flag = True
     shot_flag = False
+    hit_flag = False
     shot_time = 0
+    hit_time = 0
     cap = cv2.VideoCapture(0)
+
+    # デバッグ用の変数
+    target_point = (500, 400)
 
     with mp_hands.Hands(
         model_complexity=0,
@@ -219,12 +237,15 @@ def main():
 
                 # 初期化
                 if init_flag:
+                    prev_keypoints = keypoints
                     prev_relative_keypoints = relative_keypoints
                     prev_angle = angle
                     init_flag = False
                 
                 shot_flag = is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
+                hit_flag = is_hit(prev_keypoints, 3, target_point, 100)
 
+                prev_keypoints = keypoints
                 prev_relative_keypoints = relative_keypoints
                 prev_angle = angle
             else:
@@ -238,11 +259,17 @@ def main():
                 if shot_flag:
                     shot_time = now
                 
-                put_bang(image, (500, 400))
+                # 命中した場合の処理
+                if hit_flag or now - hit_time < 0.5:
+                    if hit_flag:
+                        hit_time = now
+                    put_bang(image, target_point)
+                else:
+                    put_target(image, target_point)
                 
                 put_text_with_background(image, "Bang!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
             else:
-                put_target(image, (500, 400))
+                put_target(image, target_point)
 
 
             # デバッグ用のテキストを描画
