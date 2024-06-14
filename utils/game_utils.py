@@ -121,6 +121,13 @@ def put_bang(image, point, size):
     image_utils.put_image(image, bang_image, point)
 
 
+# タイトルを描画
+def put_title(base_image, title_image):
+    title_image_half = image_utils.resize(title_image, 0.5)
+    point = (30+int(title_image_half.shape[1]/2), 30+int(title_image_half.shape[0]/2))
+    image_utils.put_image(base_image, title_image_half, point)
+
+
 # 人差し指の先端と付け根の角度を取得する
 def get_angle(relative_keypoints):
     if relative_keypoints == 0:

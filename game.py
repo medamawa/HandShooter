@@ -4,7 +4,7 @@ import time
 import utils.game_utils as game_utils
 import utils.image_utils as image_utils
 
-def game(window_name, mp_info):
+def game(window_name, mp_info, title_image):
     calibration_step = 0
     init_flag = True
     shot_flag = False
@@ -107,10 +107,10 @@ def game(window_name, mp_info):
                     if hit_flag:
                         hit_time = now
                     game_utils.put_bang(image, target_point, target_size)
-                    image_utils.put_text_with_background(image, "Hit!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 else:
                     game_utils.put_target(image, target_point, target_size)
-                    image_utils.put_text_with_background(image, "Bang!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
             else:
                 game_utils.put_target(image, target_point, target_size)
             
@@ -133,7 +133,8 @@ def game(window_name, mp_info):
             '''
 
             # タイトルを付けて画像を表示
-            image_utils.put_text_with_background(image, window_name, (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
+            # image_utils.put_text_with_background(image, window_name, (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
+            game_utils.put_title(image, title_image)
             cv2.imshow("Hand Shooter", image)
 
             '''
