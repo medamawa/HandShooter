@@ -221,7 +221,7 @@ def main():
     cap = cv2.VideoCapture(0)
 
     # デバッグ用の変数
-    target_point = (500, 400)
+    target_point = [500, 400]
     target_size = 100
     range_multiplier = 3
 
@@ -293,24 +293,31 @@ def main():
                 put_debug_text(image, keypoints, relative_keypoints)
 
 
-            # 検出された手の骨格をカメラ画像に重ねて描画
+            # 出力の処理
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-            # 出力の処理
-            if results.multi_hand_landmarks:
-                for hand_landmarks in results.multi_hand_landmarks:
-                    mp_drawing.draw_landmarks(
-                        image,
-                        hand_landmarks,
-                        mp_hands.HAND_CONNECTIONS,
-                        mp_drawing_styles.get_default_hand_landmarks_style(),
-                        mp_drawing_styles.get_default_hand_connections_style())
-            
+            # # 検出された手の骨格をカメラ画像に重ねて描画
+            # if results.multi_hand_landmarks:
+            #     for hand_landmarks in results.multi_hand_landmarks:
+            #         mp_drawing.draw_landmarks(
+            #             image,
+            #             hand_landmarks,
+            #             mp_hands.HAND_CONNECTIONS,
+            #             mp_drawing_styles.get_default_hand_landmarks_style(),
+            #             mp_drawing_styles.get_default_hand_connections_style())
+
+            # windowの作成と表示
             cv2.namedWindow("Hand Shooter", cv2.WND_PROP_FULLSCREEN)
             cv2.setWindowProperty("Hand Shooter", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             put_text_with_background(image, "Hand Shooter", (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
             cv2.imshow("Hand Shooter", image)
+
+            # 的を動かす
+            if target_point[0] >= 1500:
+                target_point[0] = 500
+            else:
+                target_point[0] += 5
 
             if cv2.waitKey(5) & 0xFF == 27:
                 break
