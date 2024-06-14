@@ -280,10 +280,10 @@ def main():
                     if hit_flag:
                         hit_time = now
                     put_bang(image, target_point, target_size)
+                    put_text_with_background(image, "Hit!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 else:
                     put_target(image, target_point, target_size)
-                
-                put_text_with_background(image, "Bang!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    put_text_with_background(image, "Bang!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
             else:
                 put_target(image, target_point, target_size)
 
