@@ -105,20 +105,31 @@ def is_hit(keypoints, range_multiplier, target_point, target_size):
 
 # 指定された座標にターゲットを描画する
 # point(x, y): ターゲットの中心座標
-def put_target(image, point):
+def put_target(image, point, size):
+    # target.pngのサイズをもとに、当たり判定と矛盾がないようにサイズを決めている
+    # target.pngのサイズが480×480で、的のサイズが410×410のため、410/480倍している
+    # また、半径で指定されているので、直径に変換するために2倍している
+    # 変数宣言の括弧の要素"(... ,) * 2"はタプルを2回繰り返すことを示している
+    image_size = (int(size*2*480/410),) * 2
+
     target_image = cv2.imread("resources/target.png", cv2.IMREAD_UNCHANGED)
     target_image = cv2.cvtColor(target_image, cv2.COLOR_BGRA2RGBA)
-    target_image = cv2.resize(target_image, (250, 250))
+    target_image = cv2.resize(target_image, image_size)
 
     put_image(image, target_image, point)
 
 
 # 指定された座標にtarget_bangを描画する
 # point(x, y): target_bangの中心座標
-def put_bang(image, point):
+def put_bang(image, point, size):
+    # target.pngのサイズをもとに、当たり判定と矛盾がないようにサイズを決めている
+    # target.pngのサイズが480×480で、的のサイズが410×410のため、410/480倍している
+    # また、半径で指定されているので、直径に変換するために2倍している
+    image_size = (int(size*2*480/410),) * 2
+
     bang_image = cv2.imread("resources/target_bang.png", cv2.IMREAD_UNCHANGED)
     bang_image = cv2.cvtColor(bang_image, cv2.COLOR_BGRA2RGBA)
-    bang_image = cv2.resize(bang_image, (250, 250))
+    bang_image = cv2.resize(bang_image, image_size)
 
     put_image(image, bang_image, point)
 
@@ -160,6 +171,7 @@ def get_angle(relative_keypoints):
     return round(angle, 1)
 
 
+# テキストを背景付きで描画する(便利関数)
 def put_text_with_background(image, text, point, font, size, color, thickness, background_color):
     #背景を描く
     (width, height), baseline= cv2.getTextSize(text, font, size, thickness)
@@ -173,6 +185,7 @@ def put_text_with_background(image, text, point, font, size, color, thickness, b
     return image
 
 
+# デバッグ用のテキストを描画
 def put_debug_text(image, keypoints, relative_keypoints):
     # 人差し指の付け根
     point1 = (int((keypoints[5][0])), int((keypoints[5][1])))
@@ -209,6 +222,9 @@ def main():
 
     # デバッグ用の変数
     target_point = (500, 400)
+    target_size = 100
+    range_multiplier = 3
+
 
     with mp_hands.Hands(
         model_complexity=0,
@@ -243,7 +259,7 @@ def main():
                     init_flag = False
                 
                 shot_flag = is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
-                hit_flag = is_hit(prev_keypoints, 3, target_point, 100)
+                hit_flag = is_hit(prev_keypoints, range_multiplier, target_point, target_size)
 
                 prev_keypoints = keypoints
                 prev_relative_keypoints = relative_keypoints
@@ -263,13 +279,13 @@ def main():
                 if hit_flag or now - hit_time < 0.5:
                     if hit_flag:
                         hit_time = now
-                    put_bang(image, target_point)
+                    put_bang(image, target_point, target_size)
                 else:
-                    put_target(image, target_point)
+                    put_target(image, target_point, target_size)
                 
                 put_text_with_background(image, "Bang!", (100, 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
             else:
-                put_target(image, target_point)
+                put_target(image, target_point, target_size)
 
 
             # デバッグ用のテキストを描画
