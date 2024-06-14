@@ -224,6 +224,7 @@ def main():
     target_point = [500, 400]
     target_size = 100
     range_multiplier = 3
+    target_speed = 10
 
 
     with mp_hands.Hands(
@@ -232,8 +233,13 @@ def main():
         min_tracking_confidence=0.5) as hands:
 
         while cap.isOpened():
-            success, image = cap.read()
 
+            '''
+            1. カメラからの入力処理
+            カメラからの入力を取得する。もしカメラからの入力がない場合は例外処理を行う。
+            画像データはBGR形式で取得されるため、RGB形式に変換する。
+            '''
+            success, image = cap.read()
             if not success:
                 print("Ignoring empty camera frame.")
                 continue
@@ -242,8 +248,22 @@ def main():
             image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
             results = hands.process(image)
 
+            '''
+            2. 関節認識処理
+            手の骨格を認識し、その座標を取得する。
+            処理は take_coordinates() で行う。
+            得られた関節の座標は keypoints に格納される。
+            '''
+
             # 関節の絶対座標wを取得
             keypoints = take_coordinates(results.multi_hand_landmarks, image)
+
+            '''
+            3. 関節座標の処理
+            関節座標をもとに、射撃判定・命中判定を行う。
+            この処理では、一つ前のフレームの関節座標を利用するので、そのデータが無い場合は初期化処理を行う。
+            関節座標が取得できていない場合は、init_flag を True にして初期化する。
+            '''
 
             # 手を正しく認識できている場合は処理を行う
             if keypoints != 0:
@@ -266,6 +286,18 @@ def main():
                 prev_angle = angle
             else:
                 init_flag = True
+            
+            '''
+            4. イベント処理
+            関節座標の処理結果に応じて、画像に描画する内容を変更する。
+            行うイベント処理は以下の通り。
+
+            - 射撃した場合に"Shot!"と表示する
+            - 命中した場合には"Hit!"と表示して、的を爆発させる
+            - それ以外の場合は、通常の的を表示する
+
+            また、イベントをしばらくの間継続して表示するために、時間を計測している。
+            '''
             
             # 関節認識処理終了時の時刻を取得
             now = time.time()
@@ -292,6 +324,10 @@ def main():
             if keypoints != 0:
                 put_debug_text(image, keypoints, relative_keypoints)
 
+            '''
+            5. 画像出力処理
+            画像を出力する。
+            '''
 
             # 出力の処理
             image.flags.writeable = True
@@ -313,11 +349,18 @@ def main():
             put_text_with_background(image, "Hand Shooter", (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
             cv2.imshow("Hand Shooter", image)
 
+            '''
+            6. 値更新処理
+            次のフレームに向けて、値を更新する。
+            '''
+
             # 的を動かす
-            if target_point[0] >= 1500:
-                target_point[0] = 500
+            if target_point[0] < 500 or target_point[0] > 1500:
+                target_speed = -target_speed
+                target_point[0] += target_speed
             else:
-                target_point[0] += 5
+                target_point[0] += target_speed
+
 
             if cv2.waitKey(5) & 0xFF == 27:
                 break
