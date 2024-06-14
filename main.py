@@ -30,10 +30,16 @@ def main():
     # windowの作成
     cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-    full_screen_white = np.ones((window_size[0], window_size[1], 3))*20
+    screen = np.ones((window_size[0], window_size[1], 3))*255
+
+    # スタート画面
+    start_image = screen.copy()
+    title_image = cv2.imread("src/title.png", cv2.IMREAD_UNCHANGED)
+    title_image = cv2.resize(title_image, (int(window_size[0]/4), int(window_size[1]/4)))
+    image_utils.put_image(start_image, title_image, (int(window_size[0]/2), int(window_size[1]/2)))
 
     while True:
-        cv2.imshow(window_name, full_screen_white)
+        cv2.imshow(window_name, title_image)
         # 終了処理
         if cv2.waitKey(0) & 0xFF == 27:
             break
@@ -44,7 +50,7 @@ def main():
 
     # 終了処理
     while True:
-        cv2.imshow(window_name, full_screen_white)
+        cv2.imshow(window_name, screen)
 
         if cv2.waitKey(0) & 0xFF == 27:
             break
