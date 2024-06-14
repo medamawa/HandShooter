@@ -1,13 +1,5 @@
 import cv2
 
-# windowのサイズを取得
-def get_window_size(window_name):
-    window_width = cv2.getWindowImageRect(window_name)[2]
-    window_height = cv2.getWindowImageRect(window_name)[3]
-
-    print(window_width, window_height)
-
-    return (window_width, window_height)
 
 # 指定された座標に任意の画像を描画する
 # point(x, y): 画像の中心座標
