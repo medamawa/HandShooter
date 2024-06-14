@@ -26,22 +26,27 @@ def calibration(step, image, keypoints):
 def main():
     window_name = "Hand Shooter"
     window_size = (1920, 1080)
+    rand = np.random.randint(0, 4)
+    title_image_path = f'src/title/{rand}.png'
 
     # windowの作成
     cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-    screen = np.ones((window_size[0], window_size[1], 3))*255
+
+    # 背景画像の読み込み
+    background = cv2.imread("src/background.png")
+    background = cv2.resize(background, window_size)
 
     # スタート画面
-    start_image = screen.copy()
-    title_image = cv2.imread("src/title.png", cv2.IMREAD_UNCHANGED)
-    title_image = cv2.resize(title_image, (int(window_size[0]/4), int(window_size[1]/4)))
+    start_image = background.copy()
+    title_image = cv2.imread(title_image_path, cv2.IMREAD_UNCHANGED)
+    title_image = image_utils.resize_with_height(title_image, int(window_size[1]/4))
     image_utils.put_image(start_image, title_image, (int(window_size[0]/2), int(window_size[1]/2)))
 
     while True:
-        cv2.imshow(window_name, title_image)
-        # 終了処理
-        if cv2.waitKey(0) & 0xFF == 27:
+        cv2.imshow(window_name, start_image)
+
+        if cv2.waitKey(0) & 0xFF:
             break
 
     # ゲームの開始
@@ -50,9 +55,9 @@ def main():
 
     # 終了処理
     while True:
-        cv2.imshow(window_name, screen)
+        cv2.imshow(window_name, background)
 
-        if cv2.waitKey(0) & 0xFF == 27:
+        if cv2.waitKey(0) & 0xFF:
             break
 
 

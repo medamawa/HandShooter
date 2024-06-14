@@ -1,5 +1,18 @@
 import cv2
 
+# 画像を倍率に合わせてリサイズする
+def resize(image, multiplier):
+    size = (int(image.shape[1] * multiplier), int(image.shape[0] * multiplier))
+    
+    return cv2.resize(image, size)
+
+
+# 画像の高さに合わせてリサイズする
+def resize_with_height(image, height):
+    multiplier = height / image.shape[0]
+
+    return resize(image, multiplier)
+
 
 # 指定された座標に任意の画像を描画する
 # point(x, y): 画像の中心座標
