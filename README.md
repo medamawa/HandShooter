@@ -40,6 +40,13 @@ python main.py
 
 ### ESCで強制終了
 
+### 射撃判定の処理フロー
+
+1. 指の角度変化で射撃を検知 is_shot = True
+2. 誤検知につながるので、0.5秒間は射撃判定を行わない
+3. 射撃の0.5秒後に着弾する
+4. ここで命中判定を行なう is_hit = True
+
 ## Color
 
 - ![#D84C8D](https://placehold.co/15x15/D84C8D/D84C8D.png) `#D84C8D`

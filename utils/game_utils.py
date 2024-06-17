@@ -121,13 +121,13 @@ def put_bang(image, point, size):
 
 # 指定された座標にinkを描画する
 # point(x, y): inkの中心座標
-def put_ink(image, point, color=0):
+def put_ink(image, window_size, point, color):
     # inkの種類をランダムに決定
     type = np.random.randint(0, 2)
 
     ink_image = cv2.imread(f"src/ink/{type}/{color}.png", cv2.IMREAD_UNCHANGED)
     ink_image = cv2.cvtColor(ink_image, cv2.COLOR_BGRA2RGBA)
-    # bang_image = cv2.resize(bang_image, image_size)
+    ink_image = image_utils.resize_with_height(ink_image, int(window_size[1]/6))
 
     image_utils.put_image(image, ink_image, point)
 

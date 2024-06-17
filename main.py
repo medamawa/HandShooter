@@ -43,7 +43,7 @@ def main():
     home(window_name, window_size, title_image)
 
     # ゲームの開始
-    game(window_name, mp_info, title_image)
+    game(window_name, window_size, title_image, mp_info)
 
     # 終了処理
     home(window_name, window_size, title_image)

@@ -1,10 +1,11 @@
 import cv2
 import time
+import numpy as np
 
 import utils.game_utils as game_utils
 import utils.image_utils as image_utils
 
-def game(window_name, mp_info, title_image):
+def game(window_name, window_size, title_image, mp_info):
     calibration_step = 0
     init_flag = True
     shot_flag = False
@@ -18,7 +19,7 @@ def game(window_name, mp_info, title_image):
     target_size = 100
     range_multiplier = 3
     target_speed = 10
-    ink_color = 0
+    ink_color = np.random.randint(0, 8)
     
 
     with mp_info[2].Hands(
@@ -72,11 +73,11 @@ def game(window_name, mp_info, title_image):
                     prev_angle = angle
                     init_flag = False
                 
-                # 射撃判定
-                shot_flag = game_utils.is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
                 # 照準の座標を取得
                 aim_point = game_utils.get_aim_point(prev_keypoints, range_multiplier)
-
+                # 射撃判定
+                shot_flag = game_utils.is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
+                # 命中判定
                 if shot_flag:
                     hit_flag = game_utils.is_hit(aim_point, target_point, target_size)
                 else:
@@ -111,8 +112,8 @@ def game(window_name, mp_info, title_image):
                 if shot_flag:
                     shot_time = now
 
-                # 射撃痕を描画
-
+                # 銃痕を描画
+                game_utils.put_ink(image, window_size, aim_point, ink_color)
                 
                 # 命中した場合の処理
                 if hit_flag or now - hit_time < 0.5:
@@ -147,7 +148,7 @@ def game(window_name, mp_info, title_image):
             # タイトルを付けて画像を表示
             # image_utils.put_text_with_background(image, window_name, (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
             game_utils.put_title(image, title_image)
-            cv2.imshow("Hand Shooter", image)
+            cv2.imshow(window_name, image)
 
             '''
             6. 値更新処理
