@@ -144,14 +144,6 @@ def game(window_name, window_size, title_image, mp_info):
                 # 射撃したフレームにはshot_timeを更新する
                 if shot_now_flag:
                     shot_time = now
-
-                # 銃痕を描画
-                if bang_flag:
-                    if bang_now_flag:
-                        # inkの種類をランダムに決定
-                        ink_type = np.random.randint(0, 2)
-                    
-                    game_utils.put_ink(image, window_size, bang_point, ink_type, ink_color)
                 
                 # 命中した場合の処理
                 if hit_flag:
@@ -163,6 +155,14 @@ def game(window_name, window_size, title_image, mp_info):
                 else:
                     game_utils.put_target(image, target_point, target_size)
                     image_utils.put_text_with_background(image, "Shot!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+
+                # 銃痕を描画
+                if bang_flag:
+                    if bang_now_flag:
+                        # inkの種類をランダムに決定
+                        ink_type = np.random.randint(0, 2)
+                    
+                    game_utils.put_ink(image, window_size, bang_point, ink_type, ink_color)
             else:
                 game_utils.put_target(image, target_point, target_size)
             
