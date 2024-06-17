@@ -8,19 +8,26 @@ import utils.image_utils as image_utils
 def game(window_name, window_size, title_image, mp_info):
     # 初期化
     init_flag = True
-    shot_flag = False       # 打ってから0.5秒間はTrue
-    show_now_flag = False   # 打ったそのフレームだけTrue
-    hit_flag = False
+    shot_flag = False       # 射撃してから0.8秒間はTrue
+    shot_now_flag = False   # 射撃したそのフレームだけTrue
+    bang_flag = False       # 着弾後0.5秒間はTrue（射撃後0.3秒〜0.8秒の間はTrue）
+    bang_now_flag = False   # 着弾したそのフレームだけTrue（射撃後0.3秒以上経った初めてのフレームでTrue）
+    hit_flag = False        # 命中した場合は、射撃後0.3秒〜0.8秒の間True
     now = time.time()
     shot_time = 0           # 射撃した時刻
     hit_time = 0
     cap = cv2.VideoCapture(0)
+
+    shot_duration = 0.3     # 射撃してから着弾するまで
+    bang_duration = 0.5     # 着弾してから消えるまで
+    duration = shot_duration + bang_duration    # 一連の処理にかかる時間
 
     # デバッグ用の変数
     target_point = [500, 400]
     target_size = 100
     range_multiplier = 3
     target_speed = 10
+    bang_point = [100, 100]
     ink_color = np.random.randint(0, 8)
     
 
@@ -78,22 +85,33 @@ def game(window_name, window_size, title_image, mp_info):
                 # 照準の座標を取得
                 aim_point = game_utils.get_aim_point(prev_keypoints, range_multiplier)
 
-                # 射撃判定(射撃してから0.5秒間は射撃判定を行わない)
+                # 射撃判定(射撃してから0.8秒間は射撃判定を行わない)
                 shot_now_flag = False
-                if now - shot_time > 0.5:
+                bang_now_flag = False
+                if now - shot_time > duration:
                     shot_now_flag = game_utils.is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
                     shot_flag = shot_now_flag
                 else:
-                    # 射撃後0.5秒間はshot_flagをTrueにする
+                    # 射撃後0.8秒間はshot_flagをTrueにする
                     shot_flag = True
                 
-                # 命中判定
-                if shot_flag:
-                    # 命中地点の座標を保管
-                    hit_point = aim_point
-                    # 命中判定
-                    hit_flag = game_utils.is_hit(aim_point, target_point, target_size)
+                # 射撃したフレームにて、照準の座標を着弾点として保管
+                if shot_now_flag:
+                    bang_point = aim_point
+                
+                # 着弾判定と命中判定
+                # 射撃したフレームを除いておかないと、挙動がおかしくなる（shot_timeの更新がこの後行われるため）
+                if shot_flag and now - shot_time > shot_duration and shot_now_flag == False:
+                    # 射撃後0.3秒以上経った初めてのフレームで着弾とする
+                    # このフレームで命中判定を行う
+                    if bang_flag == False:
+                        bang_now_flag = True
+                        bang_flag = True
+                    
+                        # 命中判定
+                        hit_flag = game_utils.is_hit(bang_point, target_point, target_size)
                 else:
+                    bang_flag = False
                     hit_flag = False
 
                 # 一つ前のフレームの座標を更新
@@ -120,24 +138,26 @@ def game(window_name, window_size, title_image, mp_info):
             # 関節認識処理終了時の時刻を取得
             now = time.time()
             
-            # 打ってから0.5秒間は"Shot!"と表示する
+            # 射撃後0.8秒間の処理
             if shot_flag:
                 # 射撃したフレームにはshot_timeを更新する
                 if shot_now_flag:
                     shot_time = now
 
                 # 銃痕を描画
-                game_utils.put_ink(image, window_size, aim_point, ink_color)
+                if bang_flag:
+                    game_utils.put_ink(image, window_size, bang_point, ink_color)
                 
                 # 命中した場合の処理
-                if hit_flag or now - hit_time < 0.5:
-                    if hit_flag:
-                        hit_time = now
+                if hit_flag:
                     game_utils.put_bang(image, target_point, target_size)
                     image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
-                else:
+                elif bang_flag:
                     game_utils.put_target(image, target_point, target_size)
                     image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                else:
+                    game_utils.put_target(image, target_point, target_size)
+                    image_utils.put_text_with_background(image, "Shot!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
             else:
                 game_utils.put_target(image, target_point, target_size)
             
