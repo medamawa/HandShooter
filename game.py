@@ -6,11 +6,13 @@ import utils.game_utils as game_utils
 import utils.image_utils as image_utils
 
 def game(window_name, window_size, title_image, mp_info):
-    calibration_step = 0
+    # 初期化
     init_flag = True
-    shot_flag = False
+    shot_flag = False       # 打ってから0.5秒間はTrue
+    show_now_flag = False   # 打ったそのフレームだけTrue
     hit_flag = False
-    shot_time = 0
+    now = time.time()
+    shot_time = 0           # 射撃した時刻
     hit_time = 0
     cap = cv2.VideoCapture(0)
 
@@ -75,10 +77,21 @@ def game(window_name, window_size, title_image, mp_info):
                 
                 # 照準の座標を取得
                 aim_point = game_utils.get_aim_point(prev_keypoints, range_multiplier)
-                # 射撃判定
-                shot_flag = game_utils.is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
+
+                # 射撃判定(射撃してから0.5秒間は射撃判定を行わない)
+                shot_now_flag = False
+                if now - shot_time > 0.5:
+                    shot_now_flag = game_utils.is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
+                    shot_flag = shot_now_flag
+                else:
+                    # 射撃後0.5秒間はshot_flagをTrueにする
+                    shot_flag = True
+                
                 # 命中判定
                 if shot_flag:
+                    # 命中地点の座標を保管
+                    hit_point = aim_point
+                    # 命中判定
                     hit_flag = game_utils.is_hit(aim_point, target_point, target_size)
                 else:
                     hit_flag = False
@@ -108,8 +121,9 @@ def game(window_name, window_size, title_image, mp_info):
             now = time.time()
             
             # 打ってから0.5秒間は"Shot!"と表示する
-            if shot_flag or now - shot_time < 0.5:
-                if shot_flag:
+            if shot_flag:
+                # 射撃したフレームにはshot_timeを更新する
+                if shot_now_flag:
                     shot_time = now
 
                 # 銃痕を描画
