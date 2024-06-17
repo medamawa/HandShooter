@@ -3,7 +3,7 @@ import cv2
 # 画像を倍率に合わせてリサイズする
 def resize(image, multiplier):
     size = (int(image.shape[1] * multiplier), int(image.shape[0] * multiplier))
-    
+
     return cv2.resize(image, size)
 
 
@@ -15,16 +15,31 @@ def resize_with_height(image, height):
 
 
 # 指定された座標に任意の画像を描画する
-# point(x, y): 画像の中心座標
-def put_image(base_image, image, point):
+# center_point(x, y): 画像の中心座標
+def put_image(base_image, image, center_point):
+    image_height, image_width = image.shape[:2]
+    base_height, base_width = base_image.shape[:2]
+    point = (center_point[0] - int(image_width/2), center_point[1] - int(image_height/2))
+
     # 貼り付け先座標の設定
-    x1 = max(point[0] - int(image.shape[1]/2), 0)
-    y1 = max(point[1] - int(image.shape[0]/2), 0)
-    x2 = x1 + image.shape[1]
-    y2 = y1 + image.shape[0]
+    x1 = max(point[0], 0)
+    y1 = max(point[1], 0)
+    x2 = min(point[0] + image_width, base_width)
+    y2 = min(point[1] + image_height, base_height)
+
+    # 完全にはみ出る場合は計算しない
+    if not ((-image_width < point[0] < base_width) and (-image_height < point[1] < base_height)):
+        return base_image
+
+    # 貼り付け画像の合成部分
+    image_x1 = 0 if x1 > 0 else image_width - (x2 - x1)
+    image_y1 = 0 if y1 > 0 else image_height - (y2 - y1)
+    image_x2 = image_width if x2 < base_width else base_width - x1
+    image_y2 = image_height if y2 < base_height else base_height - y1
 
     # 合成
-    base_image[y1:y2, x1:x2] = base_image[y1:y2, x1:x2] * (1 - image[:, :, 3:] / 255) + image[:, :, :3] * (image[:, :, 3:] / 255)
+    base_image[y1:y2, x1:x2] = base_image[y1:y2, x1:x2] * (1 - image[image_y1:image_y2, image_x1:image_x2, 3:] / 255) \
+        + image[image_y1:image_y2, image_x1:image_x2, :3] * (image[image_y1:image_y2, image_x1:image_x2, 3:] / 255)
 
 
 # テキストを背景付きで描画する

@@ -28,6 +28,12 @@ python main.py
     └─ image_utils.py
 ```
 
+## Requirements
+
+- Python3
+- MediaPipe
+- OpenCV
+
 ## Technical point
 
 ### キャリブレーションで決定する変数
