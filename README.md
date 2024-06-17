@@ -3,7 +3,29 @@
 ## How to play
 
 ```shell
-python hand.py
+python main.py
+```
+
+## Directory
+
+```
+│  game.py
+│  home.py
+│  main.py
+│
+├─src
+│  │  background.png
+│  │  target.png
+│  │  ...etc
+│  │
+│  └─title
+│      │  0.png
+│      │  1.png
+│      └─ ...etc
+│
+└─utils
+    │  game_utils.py
+    └─ image_utils.py
 ```
 
 ## Technical point
