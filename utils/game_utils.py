@@ -1,5 +1,4 @@
 import cv2
-import mediapipe as mp
 import numpy as np
 
 import utils.image_utils as image_utils
@@ -80,8 +79,7 @@ def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
 
 
 # 命中したかどうか判定
-def is_hit(keypoints, range_multiplier, target_point, target_size):
-    aim_point = get_aim_point(keypoints, range_multiplier)
+def is_hit(aim_point, target_point, target_size):
 
     # 射線とターゲットの距離が一定範囲内にあれば命中と判定
     if np.linalg.norm(np.array(aim_point) - np.array(target_point)) <= target_size:
@@ -119,6 +117,20 @@ def put_bang(image, point, size):
     bang_image = cv2.resize(bang_image, image_size)
 
     image_utils.put_image(image, bang_image, point)
+
+
+# 指定された座標にinkを描画する
+# point(x, y): inkの中心座標
+def put_ink(image, point, color=0):
+    # inkの種類をランダムに決定
+    type = np.random.randint(0, 2)
+
+    ink_image = cv2.imread(f"src/ink/{type}/{color}.png", cv2.IMREAD_UNCHANGED)
+    ink_image = cv2.cvtColor(ink_image, cv2.COLOR_BGRA2RGBA)
+    # bang_image = cv2.resize(bang_image, image_size)
+
+    image_utils.put_image(image, ink_image, point)
+
 
 
 # タイトルを描画

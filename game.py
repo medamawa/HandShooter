@@ -18,6 +18,7 @@ def game(window_name, mp_info, title_image):
     target_size = 100
     range_multiplier = 3
     target_speed = 10
+    ink_color = 0
     
 
     with mp_info[2].Hands(
@@ -71,9 +72,17 @@ def game(window_name, mp_info, title_image):
                     prev_angle = angle
                     init_flag = False
                 
+                # 射撃判定
                 shot_flag = game_utils.is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
-                hit_flag = game_utils.is_hit(prev_keypoints, range_multiplier, target_point, target_size)
+                # 照準の座標を取得
+                aim_point = game_utils.get_aim_point(prev_keypoints, range_multiplier)
 
+                if shot_flag:
+                    hit_flag = game_utils.is_hit(aim_point, target_point, target_size)
+                else:
+                    hit_flag = False
+
+                # 一つ前のフレームの座標を更新
                 prev_keypoints = keypoints
                 prev_relative_keypoints = relative_keypoints
                 prev_angle = angle
@@ -101,6 +110,9 @@ def game(window_name, mp_info, title_image):
             if shot_flag or now - shot_time < 0.5:
                 if shot_flag:
                     shot_time = now
+
+                # 射撃痕を描画
+
                 
                 # 命中した場合の処理
                 if hit_flag or now - hit_time < 0.5:
