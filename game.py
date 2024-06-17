@@ -150,7 +150,7 @@ def game(window_name, mp_info, title_image):
                 target_point[0] += target_speed
 
 
-            if cv2.waitKey(5) & 0xFF == 27:
+            if cv2.waitKey(1) & 0xFF == 27:
                 break
 
     cap.release()
