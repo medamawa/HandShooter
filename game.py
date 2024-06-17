@@ -129,6 +129,7 @@ def game(window_name, window_size, title_image, mp_info):
             行うイベント処理は以下の通り。
 
             - 射撃した場合に"Shot!"と表示する
+            - 着弾した場合には"Bang!"と表示して、銃痕を描画する
             - 命中した場合には"Hit!"と表示して、的を爆発させる
             - それ以外の場合は、通常の的を表示する
 
@@ -146,7 +147,11 @@ def game(window_name, window_size, title_image, mp_info):
 
                 # 銃痕を描画
                 if bang_flag:
-                    game_utils.put_ink(image, window_size, bang_point, ink_color)
+                    if bang_now_flag:
+                        # inkの種類をランダムに決定
+                        ink_type = np.random.randint(0, 2)
+                    
+                    game_utils.put_ink(image, window_size, bang_point, ink_type, ink_color)
                 
                 # 命中した場合の処理
                 if hit_flag:
