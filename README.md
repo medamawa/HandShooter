@@ -33,3 +33,17 @@ python main.py
 ### キャリブレーションで決定する変数
 
 - 人差し指の何倍の長さを射撃位置にするのか
+
+## Color
+
+- ![#D84C8D](https://placehold.co/15x15/D84C8D/D84C8D.png) `#D84C8D`
+- ![#F9FF5C](https://placehold.co/15x15/F9FF5C/F9FF5C.png) `#F9FF5C`
+- ![#81D059](https://placehold.co/15x15/81D059/81D059.png) `#81D059`
+- ![#2F22DB](https://placehold.co/15x15/2F22DB/2F22DB.png) `#2F22DB`
+- ![#9C2BF6](https://placehold.co/15x15/9C2BF6/9C2BF6.png) `#9C2BF6`
+
+
+## Credit
+
+- サムネ素材館
+https://samune-sozaikan.com/

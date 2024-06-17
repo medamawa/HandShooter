@@ -4,6 +4,7 @@ import numpy as np
 
 from game import game
 from home import home
+
 import utils.game_utils as game_utils
 import utils.image_utils as image_utils
 
@@ -32,22 +33,20 @@ def main():
     cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-    # 背景画像とタイトル画像の読み込み
-    background = cv2.imread("src/background.png")
-    background = cv2.resize(background, window_size)
+    # タイトル画像の読み込み
     rand = np.random.randint(0, 4)
     title_image_path = f'src/title/{rand}.png'
     title_image = cv2.imread(title_image_path, cv2.IMREAD_UNCHANGED)
     title_image = image_utils.resize_with_height(title_image, int(window_size[1]/4))
 
     # ホーム画面
-    home(window_name, window_size, background, title_image)
+    home(window_name, window_size, title_image)
 
     # ゲームの開始
     game(window_name, mp_info, title_image)
 
     # 終了処理
-    home(window_name, window_size, background, title_image)
+    home(window_name, window_size, title_image)
 
 
 if __name__ == "__main__":
