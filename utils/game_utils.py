@@ -87,6 +87,13 @@ def is_hit(aim_point, target_point, target_size):
     else:
         return False
 
+def put_reticle(image, window_size, point):
+    reticle_image = cv2.imread("src/reticle.png", cv2.IMREAD_UNCHANGED)
+    reticle_image = cv2.cvtColor(reticle_image, cv2.COLOR_BGRA2RGBA)
+    reticle_image = image_utils.resize_with_height(reticle_image, int(window_size[1]/12))
+
+    image_utils.put_image(image, reticle_image, point)
+
 
 # 指定された座標にターゲットを描画する
 # point(x, y): ターゲットの中心座標

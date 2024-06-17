@@ -145,6 +145,9 @@ def game(window_name, window_size, title_image, mp_info):
                 if shot_now_flag:
                     shot_time = now
                 
+                # レティクルを描画
+                game_utils.put_reticle(image, window_size, aim_point)
+                
                 # 命中した場合の処理
                 if hit_flag:
                     game_utils.put_bang(image, target_point, target_size)
@@ -164,6 +167,9 @@ def game(window_name, window_size, title_image, mp_info):
                     
                     game_utils.put_ink(image, window_size, bang_point, ink_type, ink_color)
             else:
+                if keypoints != 0:
+                    # レティクルを描画
+                    game_utils.put_reticle(image, window_size, aim_point)
                 game_utils.put_target(image, target_point, target_size)
             
 
