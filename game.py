@@ -17,6 +17,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
     now = time.time()
     shot_time = 0           # 射撃した時刻
     hit_time = 0
+    score = 0
     cap = cv2.VideoCapture(0)
 
     shot_duration = 0.3     # 射撃してから着弾するまで
@@ -111,6 +112,9 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                     
                         # 命中判定
                         hit_target = game_utils.get_hit_target(bang_point, target_list)
+                        # 命中した場合はスコアを加算
+                        if hit_target is not None:
+                            score += target_list[hit_target]["score"]
                 else:
                     bang_flag = False
                     hit_target = None
@@ -150,14 +154,14 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                 if hit_target is not None:
                     game_utils.put_hit_target(image, target_list[hit_target])
                     game_utils.put_targets(image, target_list, hit_target)
-                    image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    image_utils.put_text_with_background(image, "Hit!", (100, 270), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 else:
                     game_utils.put_targets(image, target_list)
 
                     if bang_flag:
-                        image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                        image_utils.put_text_with_background(image, "Bang!", (100, 270), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                     else:
-                        image_utils.put_text_with_background(image, "Shot!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                        image_utils.put_text_with_background(image, "Shot!", (100, 270), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
 
                 # 銃痕を描画
                 if bang_flag:
@@ -173,24 +177,30 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             if keypoints != 0:
                 # レティクルを描画
                 game_utils.put_reticle(image, window_size, aim_point)
-            
+
+            '''
+            5. 画像出力処理
+            画像を出力する。
+            '''
+
+            # スコアの表示
+            game_utils.put_score(image, window_size, score)
 
             # 出力の処理
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
             # デバッグ情報を描画
-            if keypoints != 0 and debag_flag:
-                # 射線を描画
-                game_utils.put_aim_line(image, keypoints, range_multiplier)
+            if debag_flag:
+                # スコアを描画
+                image_utils.put_text_with_background(image, f"Score: {score}", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
 
-                # デバッグ情報を描画
-                game_utils.put_debug_info(image, keypoints, relative_keypoints, mp_info, results)
+                if keypoints != 0:
+                    # 射線を描画
+                    game_utils.put_aim_line(image, keypoints, range_multiplier)
 
-            '''
-            5. 画像出力処理
-            画像を出力する。
-            '''
+                    # デバッグ情報を描画
+                    game_utils.put_debug_info(image, keypoints, relative_keypoints, mp_info, results)
 
             # タイトルを付けて画像を表示
             game_utils.put_title(image, title_image)

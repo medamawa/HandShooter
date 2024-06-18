@@ -111,6 +111,7 @@ def put_reticle(image, window_size, point):
     image_utils.put_image(image, reticle_image, point)
 
 
+# ターゲットを全て描画する
 def put_targets(image, target_list, except_target=None):
     for i, target in enumerate(target_list):
         if i == except_target:
@@ -118,8 +119,7 @@ def put_targets(image, target_list, except_target=None):
         put_a_target(image, target)
 
 
-# 指定された座標にターゲットを描画する
-# point(x, y): ターゲットの中心座標
+# 指定されたターゲットを描画する
 def put_a_target(image, target):
     # target.pngのサイズをもとに、当たり判定と矛盾がないようにサイズを決めている
     # target.pngのサイズが480×480で、的のサイズが410×410のため、410/480倍している
@@ -134,8 +134,7 @@ def put_a_target(image, target):
     image_utils.put_image(image, target_image, target["point"])
 
 
-# 指定された座標に命中したターゲットを描画する
-# point(x, y): ターゲットの中心座標
+# 命中されたターゲットを描画する
 def put_hit_target(image, target):
     # target.pngのサイズをもとに、当たり判定と矛盾がないようにサイズを決めている
     # target.pngのサイズが480×480で、的のサイズが410×410のため、410/480倍している
@@ -231,6 +230,7 @@ def get_aim_point(keypoints, range_multiplier):
     return aim_point
 
 
+# ターゲットの移動処理
 def update_target_point(target_list, window_size):
 
     window_width = window_size[0]
@@ -284,3 +284,27 @@ def update_target_point(target_list, window_size):
             if left_check(target) or right_check(target) or top_check(target) or bottom_check(target):
                 target["movement"] = 2
 
+
+# スコアの表示
+def put_score(image, window_size, score):
+    point = (window_size[0] - 80, 100)
+    score_image_width = 80
+    comma_image_width = 40
+
+    comma_image = cv2.imread('src/char/comma.png', cv2.IMREAD_UNCHANGED)
+    p_image = cv2.imread('src/char/p.png', cv2.IMREAD_UNCHANGED)
+    image_utils.put_image(image, p_image, point)
+
+    for i, str_num in enumerate(reversed(list(str(score)))):
+        num = int(str_num)
+
+        if i % 3 == 0 and i != 0:
+            point = (point[0] - int((comma_image_width + score_image_width) / 2), point[1])
+            image_utils.put_image(image, comma_image, point)
+            point = (point[0] - int((comma_image_width + score_image_width) / 2), point[1])
+        else:
+            point = (point[0] - score_image_width, point[1])
+        
+        num_image = cv2.imread(f'src/char/{num}.png', cv2.IMREAD_UNCHANGED)
+
+        image_utils.put_image(image, num_image, point)
