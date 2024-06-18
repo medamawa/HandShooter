@@ -15,17 +15,6 @@ mp_hands = mp.solutions.hands
 mp_info = (mp_drawing, mp_drawing_styles, mp_hands)
 
 
-# キャリブレーション処理
-def calibration(step, image, keypoints):
-    print("Calibrating...")
-
-    if step == 0:
-        print("Please open your hand.")
-        cv2.putText(image, "Please open your hand.", (100, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
-        if game_utils.is_shot(keypoints, keypoints[0]):
-            step = 1
-
-
 def main():
     window_name = "Hand Shooter"
     window_size = (1920, 1080)
