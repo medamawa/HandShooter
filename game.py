@@ -13,6 +13,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
     bang_flag = False       # 着弾後0.5秒間はTrue（射撃後0.3秒〜0.8秒の間はTrue）
     bang_now_flag = False   # 着弾したそのフレームだけTrue（射撃後0.3秒以上経った初めてのフレームでTrue）
     hit_flag = False        # 命中した場合は、射撃後0.3秒〜0.8秒の間True
+    hit_target = None
     now = time.time()
     shot_time = 0           # 射撃した時刻
     hit_time = 0
@@ -23,10 +24,13 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
     duration = shot_duration + bang_duration    # 一連の処理にかかる時間
 
     # デバッグ用の変数
-    target_point = [500, 400]
-    target_size = 100
-    target_speed = 10
+    debag_flag = True
+    # target_point = [500, 400]
+    # target_size = 50
+    # target_speed = 10
     ink_color = np.random.randint(0, 8)
+    target_list = [{"type": "squid", "size": 100, "color": 0, "movement": 0, "point": [500, 400], "score": 100, "is_hit": False},
+                   {"type": "squid", "size": 50, "color": 0, "movement": 0, "point": [800, 600], "score": 300, "is_hit": False}]
     
 
     with mp_info[2].Hands(
@@ -107,10 +111,12 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                         bang_flag = True
                     
                         # 命中判定
-                        hit_flag = game_utils.is_hit(bang_point, target_point, target_size)
+                        # hit_flag = game_utils.is_hit(bang_point, target_point, target_size)
+                        hit_target = game_utils.get_hit_target(bang_point, target_list)
                 else:
                     bang_flag = False
-                    hit_flag = False
+                    # hit_flag = False
+                    hit_target = None
 
                 # 一つ前のフレームの座標を更新
                 prev_keypoints = keypoints
@@ -119,7 +125,8 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             else:
                 init_flag = True
                 shot_flag = False
-                hit_flag = False
+                # hit_flag = False
+                hit_target = None
             
             '''
             4. イベント処理
@@ -143,16 +150,29 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                 if shot_now_flag:
                     shot_time = now
                 
+                # # 命中した場合の処理
+                # if hit_target is not None:
+                #     game_utils.put_hit_target(image, target_point, target_size)
+                #     image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                # elif bang_flag:
+                #     game_utils.put_target(image, target_point, target_size)
+                #     image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                # else:
+                #     game_utils.put_target(image, target_point, target_size)
+                #     image_utils.put_text_with_background(image, "Shot!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+
                 # 命中した場合の処理
-                if hit_flag:
-                    game_utils.put_hit_target(image, target_point, target_size)
+                if hit_target is not None:
+                    game_utils.put_hit_target(image, target_list[hit_target])
+                    game_utils.put_targets(image, target_list, hit_target)
                     image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
-                elif bang_flag:
-                    game_utils.put_target(image, target_point, target_size)
-                    image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 else:
-                    game_utils.put_target(image, target_point, target_size)
-                    image_utils.put_text_with_background(image, "Shot!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    game_utils.put_targets(image, target_list)
+
+                    if bang_flag:
+                        image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    else:
+                        image_utils.put_text_with_background(image, "Shot!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
 
                 # 銃痕を描画
                 if bang_flag:
@@ -163,7 +183,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                     game_utils.put_ink(image, window_size, bang_point, ink_type, ink_color)
 
             else:
-                game_utils.put_target(image, target_point, target_size)
+                game_utils.put_targets(image, target_list)
 
             if keypoints != 0:
                 # レティクルを描画
@@ -174,9 +194,9 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-
-            # 射線を描画
-            if keypoints != 0:
+            # デバッグ情報を描画
+            if keypoints != 0 and debag_flag:
+                # 射線を描画
                 game_utils.put_aim_line(image, keypoints, range_multiplier)
 
                 # デバッグ情報を描画
@@ -197,11 +217,11 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             '''
 
             # 的を動かす
-            if target_point[0] < 500 or target_point[0] > 1500:
-                target_speed = -target_speed
-                target_point[0] += target_speed
-            else:
-                target_point[0] += target_speed
+            # if target_point[0] < 500 or target_point[0] > 1500:
+            #     target_speed = -target_speed
+            #     target_point[0] += target_speed
+            # else:
+            #     target_point[0] += target_speed
 
 
             if cv2.waitKey(1) & 0xFF == 27:

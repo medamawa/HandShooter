@@ -44,7 +44,8 @@ def main():
     home(window_name, window_size, title_image)
 
     # チュートリアル
-    range_multiplier = turorial(window_name, window_size, title_image, mp_info)
+    # range_multiplier = turorial(window_name, window_size, title_image, mp_info)
+    range_multiplier = 3
 
     # ゲームの開始
     game(window_name, window_size, title_image, mp_info, range_multiplier)
