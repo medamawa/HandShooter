@@ -239,9 +239,9 @@ def update_target_point(target_list, window_size):
     # ターゲットが画面端に到達したかどうか判定
     # 到達している場合にTrueを返す
     def left_check(target):
-        return target["point"][0] < 300 and target["speed"] < 0
+        return target["point"][0] < 200 and target["speed"] < 0
     def right_check(target):
-        return target["point"][0] > window_width-300 and target["speed"] > 0
+        return target["point"][0] > window_width-200 and target["speed"] > 0
     def top_check(target):
         return target["point"][1] < 150 and target["speed"] < 0
     def bottom_check(target):
@@ -252,7 +252,6 @@ def update_target_point(target_list, window_size):
         return target["point"][1] > window_height-150 and target["speed"] < 0
     
     for target in target_list:
-
         if target["movement"] == 0:     # 横移動
             if left_check(target) or right_check(target):
                 target["speed"] = -target["speed"]
@@ -271,6 +270,9 @@ def update_target_point(target_list, window_size):
             
             target["point"][0] += target["speed"]
             target["point"][1] -= target["speed"]
+
+            if left_check(target) or right_check(target) or negative_top_check(target) or negative_bottom_check(target):
+                target["movement"] = 3
         
         elif target["movement"] == 3:   # 斜め移動(左上から右下)
             if left_check(target) or right_check(target) or top_check(target) or bottom_check(target):
@@ -278,4 +280,7 @@ def update_target_point(target_list, window_size):
             
             target["point"][0] += target["speed"]
             target["point"][1] += target["speed"]
+
+            if left_check(target) or right_check(target) or top_check(target) or bottom_check(target):
+                target["movement"] = 2
 
