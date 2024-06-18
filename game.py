@@ -150,7 +150,7 @@ def game(window_name, window_size, title_image, mp_info):
                 
                 # 命中した場合の処理
                 if hit_flag:
-                    game_utils.put_bang(image, target_point, target_size)
+                    game_utils.put_hit_target(image, target_point, target_size)
                     image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 elif bang_flag:
                     game_utils.put_target(image, target_point, target_size)

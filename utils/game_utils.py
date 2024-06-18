@@ -87,6 +87,8 @@ def is_hit(aim_point, target_point, target_size):
     else:
         return False
 
+
+# レティクルの表示
 def put_reticle(image, window_size, point):
     reticle_image = cv2.imread("src/reticle.png", cv2.IMREAD_UNCHANGED)
     reticle_image = cv2.cvtColor(reticle_image, cv2.COLOR_BGRA2RGBA)
@@ -104,22 +106,22 @@ def put_target(image, point, size):
     # 変数宣言の括弧の要素"(... ,) * 2"はタプルを2回繰り返すことを示している
     image_size = (int(size*2*480/410),) * 2
 
-    target_image = cv2.imread("src/target.png", cv2.IMREAD_UNCHANGED)
+    target_image = cv2.imread("src/target/squid/0.png", cv2.IMREAD_UNCHANGED)
     target_image = cv2.cvtColor(target_image, cv2.COLOR_BGRA2RGBA)
     target_image = cv2.resize(target_image, image_size)
 
     image_utils.put_image(image, target_image, point)
 
 
-# 指定された座標にtarget_bangを描画する
-# point(x, y): target_bangの中心座標
-def put_bang(image, point, size):
+# 指定された座標に命中したターゲットを描画する
+# point(x, y): ターゲットの中心座標
+def put_hit_target(image, point, size):
     # target.pngのサイズをもとに、当たり判定と矛盾がないようにサイズを決めている
     # target.pngのサイズが480×480で、的のサイズが410×410のため、410/480倍している
     # また、半径で指定されているので、直径に変換するために2倍している
     image_size = (int(size*2*480/410),) * 2
 
-    bang_image = cv2.imread("src/target_bang.png", cv2.IMREAD_UNCHANGED)
+    bang_image = cv2.imread("src/target/squid_hit/0.png", cv2.IMREAD_UNCHANGED)
     bang_image = cv2.cvtColor(bang_image, cv2.COLOR_BGRA2RGBA)
     bang_image = cv2.resize(bang_image, image_size)
 
