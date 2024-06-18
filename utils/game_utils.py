@@ -192,9 +192,9 @@ def put_debug_info(image, keypoints, relative_keypoints, mp_info, results):
 
 
 # 射線を描画
-def put_aim_line(image, keypoints):
+def put_aim_line(image, keypoints, range_multiplier):
     point1 = (int((keypoints[5][0])), int((keypoints[5][1])))
-    aim_point = get_aim_point(keypoints, 3)
+    aim_point = get_aim_point(keypoints, range_multiplier)
     image = cv2.line(image, point1, aim_point, (0, 255, 0), 3)
 
 
@@ -205,7 +205,7 @@ def get_aim_point(keypoints, range_multiplier):
     # 人差し指の先端
     point2 = (int((keypoints[8][0])), int((keypoints[8][1])))
 
-    aim_point = ((point2[0] - point1[0]) * range_multiplier + point1[0], (point2[1] - point1[1]) * range_multiplier + point1[1])
+    aim_point = (int((point2[0] - point1[0]) * range_multiplier + point1[0]), int((point2[1] - point1[1]) * range_multiplier + point1[1]))
 
     return aim_point
 

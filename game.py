@@ -161,15 +161,13 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                         ink_type = np.random.randint(0, 2)
                     
                     game_utils.put_ink(image, window_size, bang_point, ink_type, ink_color)
-                
-                # レティクルを描画
-                game_utils.put_reticle(image, window_size, aim_point)
 
             else:
                 game_utils.put_target(image, target_point, target_size)
-                if keypoints != 0:
-                    # レティクルを描画
-                    game_utils.put_reticle(image, window_size, aim_point)
+
+            if keypoints != 0:
+                # レティクルを描画
+                game_utils.put_reticle(image, window_size, aim_point)
             
 
             # 出力の処理
@@ -179,7 +177,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
 
             # 射線を描画
             if keypoints != 0:
-                game_utils.put_aim_line(image, keypoints)
+                game_utils.put_aim_line(image, keypoints, range_multiplier)
 
                 # デバッグ情報を描画
                 game_utils.put_debug_info(image, keypoints, relative_keypoints, mp_info, results)
@@ -190,7 +188,6 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             '''
 
             # タイトルを付けて画像を表示
-            # image_utils.put_text_with_background(image, window_name, (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
             game_utils.put_title(image, title_image)
             cv2.imshow(window_name, image)
 

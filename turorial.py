@@ -20,7 +20,7 @@ def turorial(window_name, window_size, title_image, mp_info):
 
     # 初期化
     init_flag = True
-    shot_flag = False       # 射撃してから0.8秒間はTrue
+    shot_flag = False       # 射撃可能かどうか。Falseの時には射撃できる。射撃してから0.8秒間は確定でTrue。キャリブレーションが終了したらFalseに
     shot_now_flag = False   # 射撃したそのフレームだけTrue
     bang_flag = False       # 着弾後0.5秒間はTrue（射撃後0.3秒〜0.8秒の間はTrue）
     bang_now_flag = False   # 着弾したそのフレームだけTrue（射撃後0.3秒以上経った初めてのフレームでTrue）
@@ -101,18 +101,15 @@ def turorial(window_name, window_size, title_image, mp_info):
                 # 射撃判定(射撃してから0.8秒間は射撃判定を行わない)
                 shot_now_flag = False
                 bang_now_flag = False
-                if now - shot_time > duration:
+                if shot_flag == False:
                     shot_now_flag = game_utils.is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle)
                     shot_flag = shot_now_flag
-                else:
-                    # 射撃後0.8秒間はshot_flagをTrueにする
-                    shot_flag = True
                 
                 # 射撃したフレームにて、照準の座標を着弾点として保管
                 # このフレームでrange_multiplierを計算する
                 if shot_now_flag:
                     bang_point = aim_point
-                    calibrating_range_multiplier.append(tutorial_utils.calc_range_multiplier(keypoints, target_point))
+                    calibrating_range_multiplier.append(tutorial_utils.calc_range_multiplier(prev_keypoints, target_point))
 
                 
                 # 着弾判定と命中判定
@@ -123,12 +120,8 @@ def turorial(window_name, window_size, title_image, mp_info):
                     if bang_flag == False:
                         bang_now_flag = True
                         bang_flag = True
-                    
-                        # # 命中判定
-                        # hit_flag = game_utils.is_hit(bang_point, target_point, target_size)
                 else:
                     bang_flag = False
-                    # hit_flag = False
 
                 # 一つ前のフレームの座標を更新
                 prev_keypoints = keypoints
@@ -136,8 +129,6 @@ def turorial(window_name, window_size, title_image, mp_info):
                 prev_angle = angle
             else:
                 init_flag = True
-                shot_flag = False
-                # hit_flag = False
             
             '''
             4. イベント処理
@@ -161,10 +152,6 @@ def turorial(window_name, window_size, title_image, mp_info):
                 if shot_now_flag:
                     shot_time = now
                 
-                # 命中した場合の処理
-                # if hit_flag:
-                #     game_utils.put_hit_target(image, target_point, target_size)
-                #     image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 if bang_flag:
                     game_utils.put_target(image, target_point, target_size)
                     image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
@@ -179,15 +166,13 @@ def turorial(window_name, window_size, title_image, mp_info):
                         # inkの種類をランダムに決定
                         ink_type = np.random.randint(0, 2)
                     
-                    game_utils.put_ink(image, window_size, bang_point, ink_type, ink_color)
-                
-                # レティクルを描画
-                game_utils.put_reticle(image, window_size, aim_point)
+                    game_utils.put_ink(image, window_size, target_point, ink_type, ink_color)
             else:
                 game_utils.put_target(image, target_point, target_size)
-                if keypoints != 0:
-                    # レティクルを描画
-                    game_utils.put_reticle(image, window_size, aim_point)
+            
+            if keypoints != 0:
+                # レティクルを描画
+                game_utils.put_reticle(image, window_size, aim_point)
             
 
             # 出力の処理
@@ -197,7 +182,7 @@ def turorial(window_name, window_size, title_image, mp_info):
 
             # 射線を描画
             if keypoints != 0:
-                game_utils.put_aim_line(image, keypoints)
+                game_utils.put_aim_line(image, keypoints, range_multiplier)
 
                 # デバッグ情報を描画
                 game_utils.put_debug_info(image, keypoints, relative_keypoints, mp_info, results)
@@ -208,7 +193,6 @@ def turorial(window_name, window_size, title_image, mp_info):
             '''
 
             # タイトルを付けて画像を表示
-            # image_utils.put_text_with_background(image, window_name, (100, 100), cv2.FONT_HERSHEY_PLAIN, 6, (0, 0, 0), 5, (255, 255, 255))
             game_utils.put_title(image, title_image)
             cv2.imshow(window_name, image)
 
@@ -217,21 +201,33 @@ def turorial(window_name, window_size, title_image, mp_info):
             次のフレームに向けて、値を更新する。
             '''
 
-            # キャリブレーションのステップに合わせてターゲットの座標を変更する
+            key = cv2.waitKey(1)
 
-            if calibration_step >= 3:
-                print("DONE")
-                break
-            else:
-                target_point = calibration_point[calibration_step]
-                target_size = 100
+            if bang_flag == True and key == 32:  # Spaceキーが押されたら次のステップへ
+                shot_flag = False
+                calibration_step += 1
+                # キャリブレーションの値に合わせて射撃距離を変更する
+                range_multiplier = sum(calibrating_range_multiplier) / len(calibrating_range_multiplier)
+                
+                # キャリブレーションのステップに合わせてターゲットの座標を変更する
+                if calibration_step >= 3:
+                    print("DONE")
+                    break
+                else:
+                    target_point = calibration_point[calibration_step]
+                    target_size = 100
 
+            elif bang_flag == True and key == 9: # Tabキーが押されたらリセット
+                shot_flag = False
+                calibrating_range_multiplier.pop()
 
-
-            if cv2.waitKey(1) & 0xFF == 27:
+            elif key == 27:   # ESCキーが押されたら終了
                 break
 
     cap.release()
+
+    print(calibrating_range_multiplier, range_multiplier)
+
     
 
-    return 3
+    return range_multiplier
