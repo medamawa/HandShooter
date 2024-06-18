@@ -25,12 +25,9 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
 
     # デバッグ用の変数
     debag_flag = True
-    # target_point = [500, 400]
-    # target_size = 50
-    # target_speed = 10
     ink_color = np.random.randint(0, 8)
     target_list = [{"type": "squid", "size": 100, "color": 0, "movement": 0, "point": [500, 400], "score": 100, "is_hit": False},
-                   {"type": "squid", "size": 50, "color": 0, "movement": 0, "point": [800, 600], "score": 300, "is_hit": False}]
+                   {"type": "squid", "size": 50, "color": 1, "movement": 0, "point": [800, 600], "score": 300, "is_hit": False}]
     
 
     with mp_info[2].Hands(
@@ -111,11 +108,9 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                         bang_flag = True
                     
                         # 命中判定
-                        # hit_flag = game_utils.is_hit(bang_point, target_point, target_size)
                         hit_target = game_utils.get_hit_target(bang_point, target_list)
                 else:
                     bang_flag = False
-                    # hit_flag = False
                     hit_target = None
 
                 # 一つ前のフレームの座標を更新
@@ -125,7 +120,6 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             else:
                 init_flag = True
                 shot_flag = False
-                # hit_flag = False
                 hit_target = None
             
             '''
@@ -149,17 +143,6 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                 # 射撃したフレームにはshot_timeを更新する
                 if shot_now_flag:
                     shot_time = now
-                
-                # # 命中した場合の処理
-                # if hit_target is not None:
-                #     game_utils.put_hit_target(image, target_point, target_size)
-                #     image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
-                # elif bang_flag:
-                #     game_utils.put_target(image, target_point, target_size)
-                #     image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
-                # else:
-                #     game_utils.put_target(image, target_point, target_size)
-                #     image_utils.put_text_with_background(image, "Shot!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
 
                 # 命中した場合の処理
                 if hit_target is not None:
