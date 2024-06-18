@@ -299,12 +299,44 @@ def put_score(image, window_size, score):
         num = int(str_num)
 
         if i % 3 == 0 and i != 0:
-            point = (point[0] - int((comma_image_width + score_image_width) / 2), point[1])
+            point = (point[0] - (comma_image_width + score_image_width) / 2, point[1])
             image_utils.put_image(image, comma_image, point)
-            point = (point[0] - int((comma_image_width + score_image_width) / 2), point[1])
+            point = (point[0] - (comma_image_width + score_image_width) / 2, point[1])
         else:
             point = (point[0] - score_image_width, point[1])
         
         num_image = cv2.imread(f'src/char/{num}.png', cv2.IMREAD_UNCHANGED)
 
         image_utils.put_image(image, num_image, point)
+
+# 時計の表示
+def put_clock(image, window_size, time, game_time=70):
+    point = (window_size[0]/2, 100)
+    num_image_width = 80
+    colon_image_width = 40
+
+    colon_image = cv2.imread('src/char/colon.png', cv2.IMREAD_UNCHANGED)
+    image_utils.put_image(image, colon_image, point)
+
+    m = int(game_time - time) // 60
+    s = int(game_time - time) % 60
+
+    for i, str_num in enumerate(reversed(list(str(m)))):
+        num = int(str_num)
+
+        m_point = (point[0] - (num_image_width + colon_image_width) / 2 - i * num_image_width, point[1])
+        
+        num_image = cv2.imread(f'src/char/{num}.png', cv2.IMREAD_UNCHANGED)
+
+        image_utils.put_image(image, num_image, m_point)
+
+    for i, str_num in enumerate(list(str(s).zfill(2))):
+        num = int(str_num)
+
+        s_point = (point[0] + (num_image_width + colon_image_width) / 2 + i * num_image_width, point[1])
+        
+        num_image = cv2.imread(f'src/char/{num}.png', cv2.IMREAD_UNCHANGED)
+
+        image_utils.put_image(image, num_image, s_point)
+
+

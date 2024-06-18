@@ -27,16 +27,20 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
     # デバッグ用の変数
     debag_flag = True
     ink_color = np.random.randint(0, 8)
-    target_list = [{"type": "squid", "size": 100, "color": 0, "movement": 0, "speed": 15, "point": [500, 400], "score": 100, "is_hit": False},
+    target_list = [{"type": "squid", "size": 100, "color": 0, "movement": 0, "speed": 15, "point": [500, 400], "score": 1200, "is_hit": False},
                    {"type": "squid", "size": 50, "color": 1, "movement": 1, "speed": 10, "point": [800, 600], "score": 300, "is_hit": False},
                    {"type": "squid", "size": 70, "color": 2, "movement": 2, "speed": 10, "point": [400, 800], "score": 700, "is_hit": False},
                    {"type": "squid", "size": 120, "color": 3, "movement": 3, "speed": 10, "point": [400, 300], "score": 700, "is_hit": False}]
+    game_time = 20
     
 
     with mp_info[2].Hands(
         model_complexity=0,
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
+
+        # ゲーム開始時刻を取得
+        start_time = now
 
         while cap.isOpened():
 
@@ -186,14 +190,17 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             # スコアの表示
             game_utils.put_score(image, window_size, score)
 
+            # 時計の表示
+            game_utils.put_clock(image, window_size, now - start_time, game_time)
+
             # 出力の処理
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
             # デバッグ情報を描画
             if debag_flag:
-                # スコアを描画
-                image_utils.put_text_with_background(image, f"Score: {score}", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                # 時計の表示
+                image_utils.put_text_with_background(image, f"Time: {now - start_time:.2f}", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
 
                 if keypoints != 0:
                     # 射線を描画
@@ -214,8 +221,10 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             # 的を動かす
             game_utils.update_target_point(target_list, window_size)
 
-
-            if cv2.waitKey(1) & 0xFF == 27:
+            # ゲーム終了処理
+            if cv2.waitKey(1) & 0xFF == 27:     # ESCキーで終了
+                break
+            elif now - start_time > game_time:  # ゲーム時間が経過したら終了
                 break
 
     cap.release()

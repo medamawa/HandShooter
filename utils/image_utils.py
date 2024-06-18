@@ -19,7 +19,7 @@ def resize_with_height(image, height):
 def put_image(base_image, image, center_point):
     image_height, image_width = image.shape[:2]
     base_height, base_width = base_image.shape[:2]
-    point = (center_point[0] - int(image_width/2), center_point[1] - int(image_height/2))
+    point = (int(center_point[0] - image_width/2), int(center_point[1] - image_height/2))
 
     # 貼り付け先座標の設定
     x1 = max(point[0], 0)
