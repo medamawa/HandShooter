@@ -26,8 +26,10 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
     # デバッグ用の変数
     debag_flag = True
     ink_color = np.random.randint(0, 8)
-    target_list = [{"type": "squid", "size": 100, "color": 0, "movement": 0, "point": [500, 400], "score": 100, "is_hit": False},
-                   {"type": "squid", "size": 50, "color": 1, "movement": 0, "point": [800, 600], "score": 300, "is_hit": False}]
+    target_list = [{"type": "squid", "size": 100, "color": 0, "movement": 0, "speed": 15, "point": [500, 400], "score": 100, "is_hit": False},
+                   {"type": "squid", "size": 50, "color": 1, "movement": 1, "speed": 10, "point": [800, 600], "score": 300, "is_hit": False},
+                   {"type": "squid", "size": 70, "color": 2, "movement": 2, "speed": 10, "point": [400, 800], "score": 700, "is_hit": False},
+                   {"type": "squid", "size": 120, "color": 3, "movement": 3, "speed": 10, "point": [400, 300], "score": 700, "is_hit": False}]
     
 
     with mp_info[2].Hands(
@@ -200,11 +202,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             '''
 
             # 的を動かす
-            # if target_point[0] < 500 or target_point[0] > 1500:
-            #     target_speed = -target_speed
-            #     target_point[0] += target_speed
-            # else:
-            #     target_point[0] += target_speed
+            game_utils.update_target_point(target_list, window_size)
 
 
             if cv2.waitKey(1) & 0xFF == 27:

@@ -230,3 +230,52 @@ def get_aim_point(keypoints, range_multiplier):
 
     return aim_point
 
+
+def update_target_point(target_list, window_size):
+
+    window_width = window_size[0]
+    window_height = window_size[1]
+
+    # ターゲットが画面端に到達したかどうか判定
+    # 到達している場合にTrueを返す
+    def left_check(target):
+        return target["point"][0] < 300 and target["speed"] < 0
+    def right_check(target):
+        return target["point"][0] > window_width-300 and target["speed"] > 0
+    def top_check(target):
+        return target["point"][1] < 150 and target["speed"] < 0
+    def bottom_check(target):
+        return target["point"][1] > window_height-150 and target["speed"] > 0
+    def negative_top_check(target):
+        return target["point"][1] < 150 and target["speed"] > 0
+    def negative_bottom_check(target):
+        return target["point"][1] > window_height-150 and target["speed"] < 0
+    
+    for target in target_list:
+
+        if target["movement"] == 0:     # 横移動
+            if left_check(target) or right_check(target):
+                target["speed"] = -target["speed"]
+            
+            target["point"][0] += target["speed"]
+        
+        elif target["movement"] == 1:   # 縦移動
+            if top_check(target) or bottom_check(target):
+                target["speed"] = -target["speed"]
+            
+            target["point"][1] += target["speed"]
+        
+        elif target["movement"] == 2:   # 斜め移動(左下から右上)
+            if left_check(target) or right_check(target) or negative_top_check(target) or negative_bottom_check(target):
+                target["speed"] = -target["speed"]
+            
+            target["point"][0] += target["speed"]
+            target["point"][1] -= target["speed"]
+        
+        elif target["movement"] == 3:   # 斜め移動(左上から右下)
+            if left_check(target) or right_check(target) or top_check(target) or bottom_check(target):
+                target["speed"] = -target["speed"]
+            
+            target["point"][0] += target["speed"]
+            target["point"][1] += target["speed"]
+
