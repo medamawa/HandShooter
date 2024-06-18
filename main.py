@@ -4,6 +4,7 @@ import numpy as np
 
 from game import game
 from home import home
+from turorial import turorial
 
 import utils.game_utils as game_utils
 import utils.image_utils as image_utils
@@ -42,8 +43,11 @@ def main():
     # ホーム画面
     home(window_name, window_size, title_image)
 
+    # チュートリアル
+    range_multiplier = turorial(window_name, window_size, title_image, mp_info)
+
     # ゲームの開始
-    game(window_name, window_size, title_image, mp_info)
+    game(window_name, window_size, title_image, mp_info, range_multiplier)
 
     # 終了処理
     home(window_name, window_size, title_image)

@@ -4,15 +4,27 @@ import numpy as np
 
 import utils.game_utils as game_utils
 import utils.image_utils as image_utils
+import utils.tutorial_utils as tutorial_utils
 
-def game(window_name, window_size, title_image, mp_info, range_multiplier):
+
+# チュートリアルを行う
+# ３つの的を狙ってもらって、射撃距離の倍率を計算する
+def turorial(window_name, window_size, title_image, mp_info):
+    # キャリブレーション関連の変数
+    calibration_step = 0
+    calibration_point = []
+    calibration_point.append((window_size[0]//2, window_size[1]//2))
+    calibration_point.append((window_size[0] - 100, 100))
+    calibration_point.append((100, window_size[1] - 100))
+    calibrating_range_multiplier = []
+
     # 初期化
     init_flag = True
     shot_flag = False       # 射撃してから0.8秒間はTrue
     shot_now_flag = False   # 射撃したそのフレームだけTrue
     bang_flag = False       # 着弾後0.5秒間はTrue（射撃後0.3秒〜0.8秒の間はTrue）
     bang_now_flag = False   # 着弾したそのフレームだけTrue（射撃後0.3秒以上経った初めてのフレームでTrue）
-    hit_flag = False        # 命中した場合は、射撃後0.3秒〜0.8秒の間True
+    # hit_flag = False        # 命中した場合は、射撃後0.3秒〜0.8秒の間True
     now = time.time()
     shot_time = 0           # 射撃した時刻
     hit_time = 0
@@ -22,12 +34,15 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
     bang_duration = 0.5     # 着弾してから消えるまで
     duration = shot_duration + bang_duration    # 一連の処理にかかる時間
 
-    # デバッグ用の変数
-    target_point = [500, 400]
+    target_point = calibration_point[0]
     target_size = 100
-    target_speed = 10
+
+    # デバッグ用の変数
     ink_color = np.random.randint(0, 8)
-    
+    range_multiplier = 3    # デフォルト値
+
+
+    cap = cv2.VideoCapture(0)
 
     with mp_info[2].Hands(
         model_complexity=0,
@@ -94,8 +109,11 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                     shot_flag = True
                 
                 # 射撃したフレームにて、照準の座標を着弾点として保管
+                # このフレームでrange_multiplierを計算する
                 if shot_now_flag:
                     bang_point = aim_point
+                    calibrating_range_multiplier.append(tutorial_utils.calc_range_multiplier(keypoints, target_point))
+
                 
                 # 着弾判定と命中判定
                 # 射撃したフレームを除いておかないと、挙動がおかしくなる（shot_timeの更新がこの後行われるため）
@@ -106,11 +124,11 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                         bang_now_flag = True
                         bang_flag = True
                     
-                        # 命中判定
-                        hit_flag = game_utils.is_hit(bang_point, target_point, target_size)
+                        # # 命中判定
+                        # hit_flag = game_utils.is_hit(bang_point, target_point, target_size)
                 else:
                     bang_flag = False
-                    hit_flag = False
+                    # hit_flag = False
 
                 # 一つ前のフレームの座標を更新
                 prev_keypoints = keypoints
@@ -119,7 +137,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             else:
                 init_flag = True
                 shot_flag = False
-                hit_flag = False
+                # hit_flag = False
             
             '''
             4. イベント処理
@@ -144,12 +162,13 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                     shot_time = now
                 
                 # 命中した場合の処理
-                if hit_flag:
-                    game_utils.put_hit_target(image, target_point, target_size)
-                    image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
-                elif bang_flag:
+                # if hit_flag:
+                #     game_utils.put_hit_target(image, target_point, target_size)
+                #     image_utils.put_text_with_background(image, "Hit!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                if bang_flag:
                     game_utils.put_target(image, target_point, target_size)
                     image_utils.put_text_with_background(image, "Bang!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+                    image_utils.put_text_with_background(image, f"{calibrating_range_multiplier[-1]}", (100, 260), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 else:
                     game_utils.put_target(image, target_point, target_size)
                     image_utils.put_text_with_background(image, "Shot!", (100, 220), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
@@ -164,7 +183,6 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                 
                 # レティクルを描画
                 game_utils.put_reticle(image, window_size, aim_point)
-
             else:
                 game_utils.put_target(image, target_point, target_size)
                 if keypoints != 0:
@@ -199,15 +217,21 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
             次のフレームに向けて、値を更新する。
             '''
 
-            # 的を動かす
-            if target_point[0] < 500 or target_point[0] > 1500:
-                target_speed = -target_speed
-                target_point[0] += target_speed
+            # キャリブレーションのステップに合わせてターゲットの座標を変更する
+
+            if calibration_step >= 3:
+                print("DONE")
+                break
             else:
-                target_point[0] += target_speed
+                target_point = calibration_point[calibration_step]
+                target_size = 100
+
 
 
             if cv2.waitKey(1) & 0xFF == 27:
                 break
 
     cap.release()
+    
+
+    return 3
