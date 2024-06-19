@@ -20,6 +20,9 @@ def result(window_name, window_size, title_image, background_color, score):
 
         image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 100))
         game_utils.put_score(background_image, window_size, score)
+
+        # スコアの表示
+        image_utils.put_text_with_background(background_image, f"Score: {score}p", (int(window_size[0]/2), int(window_size[1]/2) + 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
     
         cv2.imshow(window_name, background_image)
 

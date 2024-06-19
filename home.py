@@ -10,6 +10,9 @@ def home(window_name, window_size, title_image, background_color):
     start_time = time.time()
     background_base = home_utils.make_background(background_color)
 
+    # 0: easy, 1: normal, 2: hard
+    play_mode = 0
+
     while True:
         # 現在時刻を取得
         now = time.time()
@@ -17,14 +20,26 @@ def home(window_name, window_size, title_image, background_color):
         # 背景画像の生成
         background_image = home_utils.animate_background(background_base, background_color, window_size, (now - start_time))
 
-        press_any_key_image = cv2.imread("src/press_any_key_to_start.png", cv2.IMREAD_UNCHANGED)
-        press_any_key_image = image_utils.resize(press_any_key_image, 0.8)
+        # press_any_key_image = cv2.imread("src/press_any_key_to_start.png", cv2.IMREAD_UNCHANGED)
+        # press_any_key_image = image_utils.resize(press_any_key_image, 0.8)
 
         image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 100))
-        image_utils.put_image(background_image, press_any_key_image, (int(window_size[0]/2), int(window_size[1]/2) + 150))
+        # image_utils.put_image(background_image, press_any_key_image, (int(window_size[0]/2), int(window_size[1]/2) + 150))
+
+        # プレイの選択
+        image_utils.put_text_with_background(background_image, "Press Enter", (int(window_size[0]/2), int(window_size[1]/2) + 110), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+        image_utils.put_text_with_background(background_image, f"Mode: {play_mode}", (int(window_size[0]/2), int(window_size[1]/2) + 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+    
     
         cv2.imshow(window_name, background_image)
 
-        # Enterが押されたら画面を切り替える
-        if cv2.waitKey(1) == 13:
-            break
+        key = cv2.waitKey(1)
+        if key == 13:       # Enterが押されたら画面を切り替える
+            return play_mode
+        elif key == 2:      # 左矢印
+            if play_mode > 0:
+                play_mode -= 1
+        elif key == 3:      # 右矢印
+            if play_mode < 2:
+                play_mode += 1
+
