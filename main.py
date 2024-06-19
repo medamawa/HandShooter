@@ -29,8 +29,11 @@ def main():
     title_image = cv2.imread(title_image_path, cv2.IMREAD_UNCHANGED)
     title_image = image_utils.resize_with_height(title_image, int(window_size[1]/4))
 
+    # ホーム画面の背景色
+    background_color = np.random.randint(0, 5)
+
     # ホーム画面
-    home(window_name, window_size, title_image)
+    home(window_name, window_size, title_image, background_color)
 
     # チュートリアル
     # range_multiplier = turorial(window_name, window_size, title_image, mp_info)
@@ -40,7 +43,7 @@ def main():
     game(window_name, window_size, title_image, mp_info, range_multiplier)
 
     # 終了処理
-    home(window_name, window_size, title_image)
+    home(window_name, window_size, title_image, background_color)
 
 
 if __name__ == "__main__":

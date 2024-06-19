@@ -5,20 +5,17 @@ import time
 import utils.image_utils as image_utils
 
 # ホーム画面
-def home(window_name, window_size, title_image):
+def home(window_name, window_size, title_image, background_color):
     # home画面の表示開始時刻を取得
     start_time = time.time()
-
-    # 背景画像の元となる画像を生成
-    rand = np.random.randint(0, 5)
-    background_base = make_background(rand)
+    background_base = make_background(background_color)
 
     while True:
         # 現在時刻を取得
         now = time.time()
 
         # 背景画像の生成
-        background_image = animate_background(background_base, rand, window_size, (now - start_time))
+        background_image = animate_background(background_base, background_color, window_size, (now - start_time))
 
         press_any_key_image = cv2.imread("src/press_any_key_to_start.png", cv2.IMREAD_UNCHANGED)
         press_any_key_image = image_utils.resize(press_any_key_image, 0.8)
@@ -34,9 +31,9 @@ def home(window_name, window_size, title_image):
 
 
 # 10x6のグリッドにイカを配置した背景画像の元となる画像を生成
-def make_background(rand):
-    base = cv2.imread(f'src/background/base/{rand}.png')
-    squid = cv2.imread(f'src/background/squid/{rand}.png', cv2.IMREAD_UNCHANGED)
+def make_background(color):
+    base = cv2.imread(f'src/background/base/{color}.png')
+    squid = cv2.imread(f'src/background/squid/{color}.png', cv2.IMREAD_UNCHANGED)
 
     base_height = base.shape[0]
     base_width = base.shape[1]
@@ -56,7 +53,7 @@ def make_background(rand):
 
 # 背景画像をアニメーションさせて、装飾を施し、リサイズして返す
 # cycle_timeで指定された時間の周期でアニメーションする
-def animate_background(base, rand, window_size, diff):
+def animate_background(base, color, window_size, diff):
     cycle_time = 60
     vartical_shift = -(diff % cycle_time) * base.shape[0]/ cycle_time
     horizontal_shift = (diff % cycle_time) * base.shape[1]/ cycle_time
@@ -64,7 +61,7 @@ def animate_background(base, rand, window_size, diff):
     base = np.roll(base, int(-horizontal_shift), axis=0)
     base = np.roll(base, int(horizontal_shift), axis=1)
 
-    mask = cv2.imread(f'src/background/mask/{rand}.png', cv2.IMREAD_UNCHANGED)
+    mask = cv2.imread(f'src/background/mask/{color}.png', cv2.IMREAD_UNCHANGED)
     
     image_utils.put_image(base, mask, (int(base.shape[1]/2), int(base.shape[0]/2)))
     base = cv2.resize(base, window_size)
