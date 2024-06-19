@@ -6,12 +6,12 @@ import utils.home_utils as home_utils
 
 # ホーム画面
 def home(window_name, window_size, title_image, background_color):
+    # -1: exit, 0: easy, 1: normal, 2: hard
+    play_mode = 0
+
     # home画面の表示開始時刻を取得
     start_time = time.time()
     background_base = home_utils.make_background(background_color)
-
-    # 0: easy, 1: normal, 2: hard
-    play_mode = 0
 
     while True:
         # 現在時刻を取得
@@ -36,6 +36,8 @@ def home(window_name, window_size, title_image, background_color):
         key = cv2.waitKey(1)
         if key == 13:       # Enterが押されたら画面を切り替える
             return play_mode
+        elif key == 27:     # ESCが押されたら終了
+            return -1
         elif key == 2:      # 左矢印
             if play_mode > 0:
                 play_mode -= 1

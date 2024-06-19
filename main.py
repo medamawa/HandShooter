@@ -19,7 +19,6 @@ mp_info = (mp_drawing, mp_drawing_styles, mp_hands)
 def main():
     window_name = "Hand Shooter"
     window_size = (1920, 1080)
-    play_flag = True    # ゲームを続けるかどうかのフラグ
 
     # windowの作成
     cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
@@ -35,18 +34,19 @@ def main():
     background_color = np.random.randint(0, 5)
 
     # ホーム画面
+    # -1: exit, 0: easy, 1: normal, 2: hard
     play_mode = home(window_name, window_size, title_image, background_color)
 
     # チュートリアル
     # range_multiplier = turorial(window_name, window_size, title_image, mp_info)
     range_multiplier = 3
 
-    while play_flag:
+    while play_mode != -1:
         # ゲームの開始
         score = game(window_name, window_size, title_image, mp_info, range_multiplier, play_mode)
 
         # 結果画面
-        play_flag = result(window_name, window_size, title_image, background_color, score)
+        play_mode = result(window_name, window_size, title_image, background_color, score)
 
 
 if __name__ == "__main__":
