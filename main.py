@@ -5,6 +5,7 @@ import numpy as np
 from game import game
 from home import home
 from turorial import turorial
+from result import result
 
 import utils.game_utils as game_utils
 import utils.image_utils as image_utils
@@ -18,6 +19,7 @@ mp_info = (mp_drawing, mp_drawing_styles, mp_hands)
 def main():
     window_name = "Hand Shooter"
     window_size = (1920, 1080)
+    play_flag = True    # ゲームを続けるかどうかのフラグ
 
     # windowの作成
     cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
@@ -39,11 +41,12 @@ def main():
     # range_multiplier = turorial(window_name, window_size, title_image, mp_info)
     range_multiplier = 3
 
-    # ゲームの開始
-    game(window_name, window_size, title_image, mp_info, range_multiplier)
+    while play_flag:
+        # ゲームの開始
+        score = game(window_name, window_size, title_image, mp_info, range_multiplier)
 
-    # 終了処理
-    home(window_name, window_size, title_image, background_color)
+        # 結果画面
+        play_flag = result(window_name, window_size, title_image, background_color, score)
 
 
 if __name__ == "__main__":

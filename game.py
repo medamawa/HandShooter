@@ -228,3 +228,5 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
                 break
 
     cap.release()
+
+    return score
