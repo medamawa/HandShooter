@@ -1,11 +1,12 @@
 import cv2
 import time
 import numpy as np
+import json
 
 import utils.game_utils as game_utils
 import utils.image_utils as image_utils
 
-def game(window_name, window_size, title_image, mp_info, range_multiplier):
+def game(window_name, window_size, title_image, mp_info, range_multiplier, play_mode):
     # 初期化
     init_flag = True
     shot_flag = False       # 射撃してから0.8秒間はTrue
@@ -27,11 +28,10 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier):
     # デバッグ用の変数
     debag_flag = True
     ink_color = np.random.randint(0, 8)
-    target_list = [{"type": "squid", "size": 100, "color": 0, "movement": 0, "speed": 15, "point": [500, 400], "score": 1200, "is_hit": False},
-                   {"type": "squid", "size": 50, "color": 1, "movement": 1, "speed": 10, "point": [800, 600], "score": 300, "is_hit": False},
-                   {"type": "squid", "size": 70, "color": 2, "movement": 2, "speed": 10, "point": [400, 800], "score": 700, "is_hit": False},
-                   {"type": "squid", "size": 120, "color": 3, "movement": 3, "speed": 10, "point": [400, 300], "score": 700, "is_hit": False}]
     game_time = 20
+    target_list = []
+    with open(f"data/{play_mode}/0.json", "r") as f:
+        target_list = json.load(f)["targets"]
     
 
     with mp_info[2].Hands(

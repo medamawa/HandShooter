@@ -35,7 +35,7 @@ def main():
     background_color = np.random.randint(0, 5)
 
     # ホーム画面
-    home(window_name, window_size, title_image, background_color)
+    play_mode = home(window_name, window_size, title_image, background_color)
 
     # チュートリアル
     # range_multiplier = turorial(window_name, window_size, title_image, mp_info)
@@ -43,7 +43,7 @@ def main():
 
     while play_flag:
         # ゲームの開始
-        score = game(window_name, window_size, title_image, mp_info, range_multiplier)
+        score = game(window_name, window_size, title_image, mp_info, range_multiplier, play_mode)
 
         # 結果画面
         play_flag = result(window_name, window_size, title_image, background_color, score)
