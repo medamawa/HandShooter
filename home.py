@@ -9,6 +9,20 @@ def home(window_name, window_size, title_image, background_color):
     # -1: exit, 0: easy, 1: normal, 2: hard
     play_mode = 0
 
+    # ボタン画像の読み込み
+    easy_button = cv2.imread("src/button/easy.png", cv2.IMREAD_UNCHANGED)
+    easy_button = image_utils.resize(easy_button, 0.5)
+    easy_selected_button = cv2.imread("src/button/easy_selected.png", cv2.IMREAD_UNCHANGED)
+    easy_selected_button = image_utils.resize(easy_selected_button, 0.5)
+    normal_button = cv2.imread("src/button/normal.png", cv2.IMREAD_UNCHANGED)
+    normal_button = image_utils.resize(normal_button, 0.5)
+    normal_selected_button = cv2.imread("src/button/normal_selected.png", cv2.IMREAD_UNCHANGED)
+    normal_selected_button = image_utils.resize(normal_selected_button, 0.5)
+    hard_button = cv2.imread("src/button/hard.png", cv2.IMREAD_UNCHANGED)
+    hard_button = image_utils.resize(hard_button, 0.5)
+    hard_selected_button = cv2.imread("src/button/hard_selected.png", cv2.IMREAD_UNCHANGED)
+    hard_selected_button = image_utils.resize(hard_selected_button, 0.5)
+
     # home画面の表示開始時刻を取得
     start_time = time.time()
     background_base = home_utils.make_background(background_color)
@@ -20,16 +34,25 @@ def home(window_name, window_size, title_image, background_color):
         # 背景画像の生成
         background_image = home_utils.animate_background(background_base, background_color, window_size, (now - start_time))
 
-        # press_any_key_image = cv2.imread("src/press_any_key_to_start.png", cv2.IMREAD_UNCHANGED)
-        # press_any_key_image = image_utils.resize(press_any_key_image, 0.8)
-
         image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 100))
-        # image_utils.put_image(background_image, press_any_key_image, (int(window_size[0]/2), int(window_size[1]/2) + 150))
 
         # プレイの選択
-        image_utils.put_text_with_background(background_image, "Press Enter", (int(window_size[0]/2), int(window_size[1]/2) + 110), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
-        image_utils.put_text_with_background(background_image, f"Mode: {play_mode}", (int(window_size[0]/2), int(window_size[1]/2) + 150), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
-    
+        if play_mode == 0:
+            image_utils.put_image(background_image, easy_selected_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, normal_button, (int(window_size[0]/2), int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, hard_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 150))
+        elif play_mode == 1:
+            image_utils.put_image(background_image, easy_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, normal_selected_button, (int(window_size[0]/2), int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, hard_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 150))
+        elif play_mode == 2:
+            image_utils.put_image(background_image, easy_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, normal_button, (int(window_size[0]/2), int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, hard_selected_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 150))
+
+        # デバッグ情報
+        image_utils.put_text_with_background(background_image, "Press Enter", (100, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+        image_utils.put_text_with_background(background_image, f"Mode: {play_mode}", (100, 140), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
     
         cv2.imshow(window_name, background_image)
 
