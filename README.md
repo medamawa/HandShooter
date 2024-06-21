@@ -74,14 +74,14 @@ python main.py
 
 
 ## Target
-| target | score |
-| --- | --- |
-| <img width="100" alt="squid_0" src="src/target/squid/0.png"> | 100p |
-| <img width="100" alt="squid_1" src="src/target/squid/1.png"> | 150p |
-| <img width="100" alt="squid_2" src="src/target/squid/2.png"> | 200p |
-| <img width="100" alt="squid_3" src="src/target/squid/3.png"> | 300p |
-| <img width="100" alt="squid_4" src="src/target/squid/4.png"> | 500p |
-| <img width="100" alt="squid_5" src="src/target/squid/5.png"> | 700p |
+| target | score | size | speed |
+| --- | --- | --- | --- |
+| <img width="100" alt="squid_0" src="src/target/squid/0.png"> | 100p | 100 | 10 |
+| <img width="100" alt="squid_1" src="src/target/squid/1.png"> | 150p | 120 | 15 |
+| <img width="100" alt="squid_2" src="src/target/squid/2.png"> | 200p | 80 | 25 |
+| <img width="100" alt="squid_3" src="src/target/squid/3.png"> | 300p | 80 | 35 |
+| <img width="100" alt="squid_4" src="src/target/squid/4.png"> | 500p | 60 | 20 |
+| <img width="100" alt="squid_5" src="src/target/squid/5.png"> | 1,000p | 50 | 25 |
 
 
 ## Credit

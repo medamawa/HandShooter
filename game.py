@@ -27,7 +27,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
 
     # ターゲットの読み込み
     target_list = []
-    with open(f"data/{play_mode}/0.json", "r") as f:
+    with open(f"stage/{play_mode}/0.json", "r") as f:
         target_list = json.load(f)["targets"]
 
     # デバッグ用の変数
@@ -158,7 +158,6 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
 
                 # 命中した場合の処理
                 if hit_target is not None:
-                    game_utils.put_hit_target(image, target_list[hit_target])
                     game_utils.put_targets(image, target_list, hit_target)
                     image_utils.put_text_with_background(image, "Hit!", (100, 270), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 else:

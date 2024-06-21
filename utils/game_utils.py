@@ -113,11 +113,12 @@ def put_reticle(image, window_size, point):
 
 
 # ターゲットを全て描画する
-def put_targets(image, target_list, except_target=None):
+def put_targets(image, target_list, hit_target=None):
     for i, target in enumerate(target_list):
-        if i == except_target:
-            continue
-        put_a_target(image, target)
+        if i == hit_target:
+            put_hit_target(image, target)
+        else:
+            put_a_target(image, target)
 
 
 # 指定されたターゲットを描画する
@@ -252,19 +253,19 @@ def update_target_point(target_list, window_size):
         return target["point"][1] > window_height-150 and target["speed"] < 0
     
     for target in target_list:
-        if target["movement"] == 0:     # 横移動
+        if target["movement"] == 1:     # 横移動
             if left_check(target) or right_check(target):
                 target["speed"] = -target["speed"]
             
             target["point"][0] += target["speed"]
         
-        elif target["movement"] == 1:   # 縦移動
+        elif target["movement"] == 2:   # 縦移動
             if top_check(target) or bottom_check(target):
                 target["speed"] = -target["speed"]
             
             target["point"][1] += target["speed"]
         
-        elif target["movement"] == 2:   # 斜め移動(左下から右上)
+        elif target["movement"] == 3:   # 斜め移動(左下から右上)
             if left_check(target) or right_check(target) or negative_top_check(target) or negative_bottom_check(target):
                 target["speed"] = -target["speed"]
             
@@ -272,9 +273,9 @@ def update_target_point(target_list, window_size):
             target["point"][1] -= target["speed"]
 
             if left_check(target) or right_check(target) or negative_top_check(target) or negative_bottom_check(target):
-                target["movement"] = 3
+                target["movement"] = 4
         
-        elif target["movement"] == 3:   # 斜め移動(左上から右下)
+        elif target["movement"] == 4:   # 斜め移動(左上から右下)
             if left_check(target) or right_check(target) or top_check(target) or bottom_check(target):
                 target["speed"] = -target["speed"]
             
@@ -282,7 +283,7 @@ def update_target_point(target_list, window_size):
             target["point"][1] += target["speed"]
 
             if left_check(target) or right_check(target) or top_check(target) or bottom_check(target):
-                target["movement"] = 2
+                target["movement"] = 3
 
 
 # スコアの表示

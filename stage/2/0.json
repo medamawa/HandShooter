@@ -1,0 +1,65 @@
+{
+    "targets":
+    [
+        {
+            "type": "squid",
+            "color": 5,
+            "score": 1000,
+            "size": 50,
+            "speed": 25,
+            "movement": 4,
+            "point": [500, 400],
+            "is_hit": false
+        },
+        {
+            "type": "squid",
+            "color": 4,
+            "score": 500,
+            "size": 60,
+            "speed": 20,
+            "movement": 4,
+            "point": [1200, 400],
+            "is_hit": false
+        },
+        {
+            "type": "squid",
+            "color": 4,
+            "score": 500,
+            "size": 60,
+            "speed": 20,
+            "movement": 3,
+            "point": [500, 400],
+            "is_hit": false
+        },
+        {
+            "type": "squid",
+            "color": 3,
+            "score": 300,
+            "size": 80,
+            "speed": 35,
+            "movement": 1,
+            "point": [500, 500],
+            "is_hit": false
+        },
+        {
+            "type": "squid",
+            "color": 3,
+            "score": 300,
+            "size": 80,
+            "speed": 35,
+            "movement": 2,
+            "point": [960, 500],
+            "is_hit": false
+        },
+        {
+            "type": "squid",
+            "color": 1,
+            "score": 150,
+            "size": 120,
+            "speed": -15,
+            "movement": 4,
+            "point": [960, 540],
+            "is_hit": false
+        }
+    ]
+}
