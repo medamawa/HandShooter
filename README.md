@@ -76,12 +76,12 @@ python main.py
 ## Target
 | target | score |
 | --- | --- |
-| ![squid_0](src/target/squid/0.png) | 100p |
-| ![squid_1](src/target/squid/1.png) | 150p |
-| ![squid_2](src/target/squid/2.png) | 200p |
-| ![squid_3](src/target/squid/3.png) | 300p |
-| ![squid_4](src/target/squid/4.png) | 500p |
-| ![squid_5](src/target/squid/5.png) | 700p |
+| <img width="100" alt="squid_0" src="src/target/squid/0.png"> | 100p |
+| <img width="100" alt="squid_1" src="src/target/squid/1.png"> | 150p |
+| <img width="100" alt="squid_2" src="src/target/squid/2.png"> | 200p |
+| <img width="100" alt="squid_3" src="src/target/squid/3.png"> | 300p |
+| <img width="100" alt="squid_4" src="src/target/squid/4.png"> | 500p |
+| <img width="100" alt="squid_5" src="src/target/squid/5.png"> | 700p |
 
 
 ## Credit
