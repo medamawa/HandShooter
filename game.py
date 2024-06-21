@@ -26,9 +26,9 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
     duration = shot_duration + bang_duration    # 一連の処理にかかる時間
 
     # デバッグ用の変数
-    debag_flag = True
+    debag_flag = False
     ink_color = np.random.randint(0, 7)
-    game_time = 20
+    game_time = 120
     target_list = []
     with open(f"data/{play_mode}/0.json", "r") as f:
         target_list = json.load(f)["targets"]

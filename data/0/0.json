@@ -3,12 +3,22 @@
     [
         {
             "type": "squid",
+            "size": 60,
+            "color": 5,
+            "movement": 2,
+            "speed": 10,
+            "point": [400, 300],
+            "score": 600,
+            "is_hit": false
+        },
+        {
+            "type": "squid",
             "size": 100,
             "color": 0,
             "movement": 0,
             "speed": 15,
             "point": [500, 400],
-            "score": 1200,
+            "score": 200,
             "is_hit": false
         },
         {
@@ -18,7 +28,17 @@
             "movement": 3,
             "speed": 10,
             "point": [400, 300],
-            "score": 700,
+            "score": 200,
+            "is_hit": false
+        },
+        {
+            "type": "squid",
+            "size": 120,
+            "color": 2,
+            "movement": 1,
+            "speed": 10,
+            "point": [200, 300],
+            "score": 200,
             "is_hit": false
         }
     ]

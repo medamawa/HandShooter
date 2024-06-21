@@ -73,6 +73,17 @@ python main.py
 - ![#FFFFFF](https://placehold.co/15x15/FFFFFF/FFFFFF.png) `#FFFFFF [255, 255, 255]` 
 
 
+## Target
+| target | score |
+| --- | --- |
+| ![squid_0](src/target/squid/0.png) | 100p |
+| ![squid_1](src/target/squid/1.png) | 150p |
+| ![squid_2](src/target/squid/2.png) | 200p |
+| ![squid_3](src/target/squid/3.png) | 300p |
+| ![squid_4](src/target/squid/4.png) | 500p |
+| ![squid_5](src/target/squid/5.png) | 700p |
+
+
 ## Credit
 
 - サムネ素材館

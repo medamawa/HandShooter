@@ -31,7 +31,7 @@ def main():
     title_image = image_utils.resize_with_height(title_image, int(window_size[1]/4))
 
     # ホーム画面の背景色
-    background_color = np.random.randint(0, 5)
+    background_color = np.random.randint(0, 4)
 
     # ホーム画面
     # -1: exit, 0: easy, 1: normal, 2: hard

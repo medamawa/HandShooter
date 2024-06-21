@@ -8,7 +8,7 @@ import utils.home_utils as home_utils
 # 結果画面
 def result(window_name, window_size, title_image, background_color, score):
     # -1: exit, 0: easy, 1: normal, 2: hard
-    play_mode = 0
+    play_mode = 1
 
     # テキスト画像の読み込み
     score_image = cv2.imread("src/text/score.png", cv2.IMREAD_UNCHANGED)
@@ -39,27 +39,27 @@ def result(window_name, window_size, title_image, background_color, score):
         background_image = home_utils.animate_background(background_base, background_color, window_size, (now - start_time))
 
         # タイトル画像の表示
-        image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 100))
+        # image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 100))
 
         # スコアの表示
         score_len = len(str(score))
-        image_utils.put_image(background_image, score_image, (int(window_size[0]/2) - 130 - 24*(score_len-1), int(window_size[1]/2) + 100))
-        score_point = (int(window_size[0]/2) + 260 + 48*(score_len-1), int(window_size[1]/2) + 100)
+        image_utils.put_image(background_image, score_image, (int(window_size[0]/2) - 130 - 24*(score_len-1), int(window_size[1]/2) - 70))
+        score_point = (int(window_size[0]/2) + 260 + 48*(score_len-1), int(window_size[1]/2) - 70)
         game_utils.put_score(background_image, score_point, score)
 
         # プレイの選択
         if play_mode == 0:
-            image_utils.put_image(background_image, easy_selected_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 250))
-            image_utils.put_image(background_image, normal_button, (int(window_size[0]/2), int(window_size[1]/2) + 250))
-            image_utils.put_image(background_image, hard_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 250))
+            image_utils.put_image(background_image, easy_selected_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, normal_button, (int(window_size[0]/2), int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, hard_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 150))
         elif play_mode == 1:
-            image_utils.put_image(background_image, easy_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 250))
-            image_utils.put_image(background_image, normal_selected_button, (int(window_size[0]/2), int(window_size[1]/2) + 250))
-            image_utils.put_image(background_image, hard_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 250))
+            image_utils.put_image(background_image, easy_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, normal_selected_button, (int(window_size[0]/2), int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, hard_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 150))
         elif play_mode == 2:
-            image_utils.put_image(background_image, easy_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 250))
-            image_utils.put_image(background_image, normal_button, (int(window_size[0]/2), int(window_size[1]/2) + 250))
-            image_utils.put_image(background_image, hard_selected_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 250))
+            image_utils.put_image(background_image, easy_button, (int(window_size[0]/2) - 250, int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, normal_button, (int(window_size[0]/2), int(window_size[1]/2) + 150))
+            image_utils.put_image(background_image, hard_selected_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 150))
 
         # # デバッグ情報
         # image_utils.put_text_with_background(background_image, f"Score: {score}p", (100, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
