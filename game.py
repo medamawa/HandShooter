@@ -25,13 +25,15 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
     bang_duration = 0.5     # 着弾してから消えるまで
     duration = shot_duration + bang_duration    # 一連の処理にかかる時間
 
+    # ターゲットの読み込み
+    target_list = []
+    with open(f"data/{play_mode}/0.json", "r") as f:
+        target_list = json.load(f)["targets"]
+
     # デバッグ用の変数
     debag_flag = False
     ink_color = np.random.randint(0, 7)
     game_time = 120
-    target_list = []
-    with open(f"data/{play_mode}/0.json", "r") as f:
-        target_list = json.load(f)["targets"]
     
 
     with mp_info[2].Hands(
@@ -115,7 +117,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
                         bang_flag = True
                     
                         # 命中判定
-                        hit_target = game_utils.get_hit_target(bang_point, target_list)
+                        hit_target = game_utils.get_hit_target(bang_point, target_list, len(target_list))
                         # 命中した場合はスコアを加算
                         if hit_target is not None:
                             score += target_list[hit_target]["score"]

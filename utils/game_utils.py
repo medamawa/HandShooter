@@ -79,14 +79,15 @@ def is_shot(prev_relative_keypoints, relative_keypoints, prev_angle, angle):
 
 
 # 命中したターゲットがあるかどうか判定
-def get_hit_target(aim_point, target_list):
+def get_hit_target(aim_point, target_list, len):
 
     hit_target = None
 
-    for i, target in enumerate(target_list):
+    # ターゲットのリストを逆順に参照して、最も手前のターゲットから判定する
+    for i, target in enumerate(reversed(target_list)):
         if is_hit(aim_point, target["point"], target["size"]):
-            hit_target = i
-            target_list[i]["is_hit"] = True
+            hit_target = len - i - 1    # 順方向でのインデックスに変換
+            target_list[hit_target]["is_hit"] = True
             break
 
     return hit_target
@@ -157,7 +158,6 @@ def put_ink(image, window_size, point, type, color):
     ink_image = image_utils.resize_with_height(ink_image, int(window_size[1]/6))
 
     image_utils.put_image(image, ink_image, point)
-
 
 
 # タイトルを描画
