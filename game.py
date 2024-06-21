@@ -27,7 +27,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
 
     # デバッグ用の変数
     debag_flag = True
-    ink_color = np.random.randint(0, 8)
+    ink_color = np.random.randint(0, 7)
     game_time = 20
     target_list = []
     with open(f"data/{play_mode}/0.json", "r") as f:
@@ -188,7 +188,8 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
             '''
 
             # スコアの表示
-            game_utils.put_score(image, window_size, score)
+            score_point = (window_size[0] - 80, 100)
+            game_utils.put_score(image, score_point, score)
 
             # 時計の表示
             game_utils.put_clock(image, window_size, now - start_time, game_time)

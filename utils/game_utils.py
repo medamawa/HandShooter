@@ -286,8 +286,7 @@ def update_target_point(target_list, window_size):
 
 
 # スコアの表示
-def put_score(image, window_size, score):
-    point = (window_size[0] - 80, 100)
+def put_score(image, point, score):
     score_image_width = 80
     comma_image_width = 40
 
@@ -308,6 +307,7 @@ def put_score(image, window_size, score):
         num_image = cv2.imread(f'src/char/{num}.png', cv2.IMREAD_UNCHANGED)
 
         image_utils.put_image(image, num_image, point)
+
 
 # 時計の表示
 def put_clock(image, window_size, time, game_time=70):

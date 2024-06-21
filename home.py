@@ -7,7 +7,7 @@ import utils.home_utils as home_utils
 # ホーム画面
 def home(window_name, window_size, title_image, background_color):
     # -1: exit, 0: easy, 1: normal, 2: hard
-    play_mode = 0
+    play_mode = 1
 
     # ボタン画像の読み込み
     easy_button = cv2.imread("src/button/easy.png", cv2.IMREAD_UNCHANGED)
@@ -34,6 +34,7 @@ def home(window_name, window_size, title_image, background_color):
         # 背景画像の生成
         background_image = home_utils.animate_background(background_base, background_color, window_size, (now - start_time))
 
+        # タイトル画像の表示
         image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 100))
 
         # プレイの選択
@@ -50,9 +51,9 @@ def home(window_name, window_size, title_image, background_color):
             image_utils.put_image(background_image, normal_button, (int(window_size[0]/2), int(window_size[1]/2) + 150))
             image_utils.put_image(background_image, hard_selected_button, (int(window_size[0]/2) + 250, int(window_size[1]/2) + 150))
 
-        # デバッグ情報
-        image_utils.put_text_with_background(background_image, "Press Enter", (100, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
-        image_utils.put_text_with_background(background_image, f"Mode: {play_mode}", (100, 140), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+        # # デバッグ情報
+        # image_utils.put_text_with_background(background_image, "Press Enter", (100, 100), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
+        # image_utils.put_text_with_background(background_image, f"Mode: {play_mode}", (100, 140), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
     
         cv2.imshow(window_name, background_image)
 
