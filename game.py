@@ -29,9 +29,9 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
     got_score_point = (window_size[0] - 80, 190)    # 取得したスコアの表示位置
 
     # プレイモードのテキストを読み込み
-    play_mode_label = ["easy", "normal", "hard"][play_mode]
-    play_mode_text = cv2.imread(f"src/button/{play_mode_label}.png", cv2.IMREAD_UNCHANGED)
-    play_mode_text = image_utils.resize(play_mode_text, 0.5)
+    play_mode_text = ["easy", "normal", "hard"][play_mode]
+    play_mode_image = cv2.imread(f"src/button/{play_mode_text}.png", cv2.IMREAD_UNCHANGED)
+    play_mode_image = image_utils.resize(play_mode_image, 0.5)
 
     # ターゲットの読み込み
     target_list = []
@@ -199,7 +199,11 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
 
             # スコアの表示
             score_point = (window_size[0] - 80, 100)
-            game_utils.put_score(image, score_point, score)
+            score_point = game_utils.put_score(image, score_point, score)
+
+            # ランクの表示
+            rank_point = (score_point[0] - 100, score_point[1])
+            game_utils.put_rank(image, rank_point, score)
 
             # 時計の表示
             game_utils.put_clock(image, window_size, now - start_time, game_time)
@@ -224,7 +228,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
             game_utils.put_title(image, title_image)
 
             # ゲームモードの表示
-            game_utils.put_play_mode(image, play_mode_text)
+            game_utils.put_play_mode(image, play_mode_image)
 
             # 画像の描画
             cv2.imshow(window_name, image)

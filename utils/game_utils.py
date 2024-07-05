@@ -173,7 +173,7 @@ def put_title(base_image, title_image):
 
 # プレイモードを描画
 def put_play_mode(base_image, play_mode_image):
-    point = (300, 160+int(play_mode_image.shape[0]/2))
+    point = (300, 155+int(play_mode_image.shape[0]/2))
     image_utils.put_image(base_image, play_mode_image, point)
 
 
@@ -317,6 +317,8 @@ def put_score(image, point, score):
         num_image = cv2.imread(f'src/char/{num}.png', cv2.IMREAD_UNCHANGED)
 
         image_utils.put_image(image, num_image, point)
+    
+    return point
 
 
 # 加算されたスコアの表示
@@ -350,6 +352,37 @@ def put_got_score(image, point, score):
     
     point = (point[0] - score_image_width, point[1])
     image_utils.put_image(image, plus_image, point)
+
+
+# ランクの表示
+def put_rank(image, point, score):
+    '''
+    C  : 0 - 300
+    B  : 300 - 800
+    A  : 800 - 1500
+    S  : 1500 - 2500
+    S+ : 2500 - 4000
+    X  : 4000 -
+    '''
+    if score < 300:
+        rank = 0
+    elif score < 800:
+        rank = 1
+    elif score < 1500:
+        rank = 2
+    elif score < 2500:
+        rank = 3
+    elif score < 4000:
+        rank = 4
+    else:
+        rank = 5
+
+
+    rank_image = cv2.imread(f'src/rank/{rank}.png', cv2.IMREAD_UNCHANGED)
+    rank_image = cv2.cvtColor(rank_image, cv2.COLOR_BGRA2RGBA)
+
+    point = (point[0] - rank_image.shape[1]/2, point[1])
+    image_utils.put_image(image, rank_image, point)
 
 
 # 時計の表示

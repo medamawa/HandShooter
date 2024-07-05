@@ -10,6 +10,7 @@ def result(window_name, window_size, title_image, background_color, score, play_
 
     # テキスト画像の読み込み
     score_image = cv2.imread("src/text/score.png", cv2.IMREAD_UNCHANGED)
+    rank_image = cv2.imread("src/text/rank.png", cv2.IMREAD_UNCHANGED)
 
     # ボタン画像の読み込み
     easy_button = cv2.imread("src/button/easy.png", cv2.IMREAD_UNCHANGED)
@@ -41,9 +42,14 @@ def result(window_name, window_size, title_image, background_color, score, play_
 
         # スコアの表示
         score_len = len(str(score))
-        image_utils.put_image(background_image, score_image, (int(window_size[0]/2) - 130 - 24*(score_len-1), int(window_size[1]/2) - 70))
-        score_point = (int(window_size[0]/2) + 260 + 48*(score_len-1), int(window_size[1]/2) - 70)
-        game_utils.put_score(background_image, score_point, score)
+        image_utils.put_image(background_image, score_image, (int(window_size[0]/2) - 130 - 24*(score_len-1), int(window_size[1]/2) - 60))
+        score_point = (int(window_size[0]/2) + 260 + 48*(score_len-1), int(window_size[1]/2) - 60)
+        score_point = game_utils.put_score(background_image, score_point, score)
+
+        # ランクの表示
+        image_utils.put_image(background_image, rank_image, (int(window_size[0]/2) - 110 - 24*(score_len-1), int(window_size[1]/2) - 170))
+        rank_point = (int(window_size[0]/2) + 260, int(window_size[1]/2) - 170)
+        game_utils.put_rank(background_image, rank_point, score)
 
         # プレイの選択
         if play_mode == 0:
