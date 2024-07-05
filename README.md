@@ -1,4 +1,7 @@
-# Hand shooting
+# Hand Shooter
+
+<img height="100" alt="title" src="src/title/3.png">
+
 
 ## How to play
 

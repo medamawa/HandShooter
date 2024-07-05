@@ -143,7 +143,10 @@ def put_hit_target(image, target):
     # また、半径で指定されているので、直径に変換するために2倍している
     image_size = (int(target["size"]*2*480/410),) * 2
 
-    bang_image = cv2.imread(f'src/target/{target["type"]}_hit/{target["color"]}.png', cv2.IMREAD_UNCHANGED)
+    if target["type"] == "squid":
+        bang_image = cv2.imread(f'src/target/{target["type"]}_hit/{target["color"]}.png', cv2.IMREAD_UNCHANGED)
+    elif target["type"] == "obstacle":      # 障害物の場合は画像が変わらない
+        bang_image = cv2.imread(f'src/target/{target["type"]}/{target["color"]}.png', cv2.IMREAD_UNCHANGED)
     bang_image = cv2.cvtColor(bang_image, cv2.COLOR_BGRA2RGBA)
     bang_image = cv2.resize(bang_image, image_size)
 

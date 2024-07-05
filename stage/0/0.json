@@ -50,6 +50,26 @@
             "movement": 1,
             "point": [1000, 450],
             "is_hit": false
+        },
+        {
+            "type": "obstacle",
+            "color": 5,
+            "score": 0,
+            "size": 250,
+            "speed": 10,
+            "movement": 0,
+            "point": [250, 815],
+            "is_hit": false
+        },
+        {
+            "type": "obstacle",
+            "color": 3,
+            "score": 0,
+            "size": 250,
+            "speed": 10,
+            "movement": 0,
+            "point": [1600, 815],
+            "is_hit": false
         }
     ]
 }
