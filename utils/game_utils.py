@@ -313,6 +313,39 @@ def put_score(image, point, score):
         image_utils.put_image(image, num_image, point)
 
 
+# 加算されたスコアの表示
+def put_got_score(image, point, score):
+    score_image_width = 40
+    comma_image_width = 20
+
+    comma_image = cv2.imread('src/char/comma.png', cv2.IMREAD_UNCHANGED)
+    comma_image = image_utils.resize(comma_image, 0.5)
+    p_image = cv2.imread('src/char/p.png', cv2.IMREAD_UNCHANGED)
+    p_image = image_utils.resize(p_image, 0.5)
+    plus_image = cv2.imread('src/char/plus.png', cv2.IMREAD_UNCHANGED)
+    plus_image = image_utils.resize(plus_image, 0.5)
+
+    image_utils.put_image(image, p_image, point)
+
+    for i, str_num in enumerate(reversed(list(str(score)))):
+        num = int(str_num)
+
+        if i % 3 == 0 and i != 0:
+            point = (point[0] - (comma_image_width + score_image_width) / 2, point[1])
+            image_utils.put_image(image, comma_image, point)
+            point = (point[0] - (comma_image_width + score_image_width) / 2, point[1])
+        else:
+            point = (point[0] - score_image_width, point[1])
+        
+        num_image = cv2.imread(f'src/char/{num}.png', cv2.IMREAD_UNCHANGED)
+        num_image = image_utils.resize(num_image, 0.5)
+
+        image_utils.put_image(image, num_image, point)
+    
+    point = (point[0] - score_image_width, point[1])
+    image_utils.put_image(image, plus_image, point)
+
+
 # 時計の表示
 def put_clock(image, window_size, time, game_time=70):
     point = (window_size[0]/2, 100)

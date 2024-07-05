@@ -46,7 +46,7 @@ def main():
         score = game(window_name, window_size, title_image, mp_info, range_multiplier, play_mode)
 
         # 結果画面
-        play_mode = result(window_name, window_size, title_image, background_color, score)
+        play_mode = result(window_name, window_size, title_image, background_color, score, play_mode)
 
 
 if __name__ == "__main__":

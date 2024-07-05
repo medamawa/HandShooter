@@ -6,9 +6,7 @@ import utils.game_utils as game_utils
 import utils.home_utils as home_utils
 
 # 結果画面
-def result(window_name, window_size, title_image, background_color, score):
-    # -1: exit, 0: easy, 1: normal, 2: hard
-    play_mode = 1
+def result(window_name, window_size, title_image, background_color, score, play_mode):
 
     # テキスト画像の読み込み
     score_image = cv2.imread("src/text/score.png", cv2.IMREAD_UNCHANGED)

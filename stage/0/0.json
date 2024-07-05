@@ -53,7 +53,7 @@
         },
         {
             "type": "obstacle",
-            "color": 5,
+            "color": 2,
             "score": 0,
             "size": 250,
             "speed": 10,

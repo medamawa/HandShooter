@@ -25,6 +25,9 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
     bang_duration = 0.5     # 着弾してから消えるまで
     duration = shot_duration + bang_duration    # 一連の処理にかかる時間
 
+    score_point = (window_size[0] - 80, 100)        # スコアの表示位置
+    got_score_point = (window_size[0] - 80, 190)    # 取得したスコアの表示位置
+
     # ターゲットの読み込み
     target_list = []
     with open(f"stage/{play_mode}/0.json", "r") as f:
@@ -159,6 +162,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
                 # 命中した場合の処理
                 if hit_target is not None:
                     game_utils.put_targets(image, target_list, hit_target)
+                    game_utils.put_got_score(image, got_score_point, target_list[hit_target]["score"])
                     image_utils.put_text_with_background(image, "Hit!", (100, 270), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3, (0, 0, 0))
                 else:
                     game_utils.put_targets(image, target_list)
