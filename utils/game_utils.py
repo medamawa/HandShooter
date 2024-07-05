@@ -171,6 +171,12 @@ def put_title(base_image, title_image):
     image_utils.put_image(base_image, title_image_half, point)
 
 
+# プレイモードを描画
+def put_play_mode(base_image, play_mode_image):
+    point = (300, 160+int(play_mode_image.shape[0]/2))
+    image_utils.put_image(base_image, play_mode_image, point)
+
+
 # 人差し指の先端と付け根の角度を取得する
 def get_angle(relative_keypoints):
     if relative_keypoints == 0:

@@ -28,6 +28,11 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
     score_point = (window_size[0] - 80, 100)        # スコアの表示位置
     got_score_point = (window_size[0] - 80, 190)    # 取得したスコアの表示位置
 
+    # プレイモードのテキストを読み込み
+    play_mode_label = ["easy", "normal", "hard"][play_mode]
+    play_mode_text = cv2.imread(f"src/button/{play_mode_label}.png", cv2.IMREAD_UNCHANGED)
+    play_mode_text = image_utils.resize(play_mode_text, 0.5)
+
     # ターゲットの読み込み
     target_list = []
     with open(f"stage/{play_mode}/0.json", "r") as f:
@@ -215,8 +220,13 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
                     # デバッグ情報を描画
                     game_utils.put_debug_info(image, keypoints, relative_keypoints, mp_info, results)
 
-            # タイトルを付けて画像を表示
+            # タイトルの表示
             game_utils.put_title(image, title_image)
+
+            # ゲームモードの表示
+            game_utils.put_play_mode(image, play_mode_text)
+
+            # 画像の描画
             cv2.imshow(window_name, image)
 
             '''
