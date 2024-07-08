@@ -42,14 +42,20 @@ def result(window_name, window_size, title_image, background_color, score, play_
 
         # スコアの表示
         score_len = len(str(score))
-        image_utils.put_image(background_image, score_image, (int(window_size[0]/2) - 130 - 24*(score_len-1), int(window_size[1]/2) - 60))
-        score_point = (int(window_size[0]/2) + 260 + 48*(score_len-1), int(window_size[1]/2) - 60)
+        game_utils.put_rank(background_image, (int(window_size[0]/2) - 40 - 24*(score_len), int(window_size[1]/2) - 60), score)
+        score_point = (int(window_size[0]/2) + 80 + 48*(score_len), int(window_size[1]/2) - 60)
         score_point = game_utils.put_score(background_image, score_point, score)
 
-        # ランクの表示
-        image_utils.put_image(background_image, rank_image, (int(window_size[0]/2) - 110 - 24*(score_len-1), int(window_size[1]/2) - 170))
-        rank_point = (int(window_size[0]/2) + 260, int(window_size[1]/2) - 170)
-        game_utils.put_rank(background_image, rank_point, score)
+        # # スコアの表示
+        # score_len = len(str(score))
+        # image_utils.put_image(background_image, score_image, (int(window_size[0]/2) - 130 - 24*(score_len-1), int(window_size[1]/2) - 60))
+        # score_point = (int(window_size[0]/2) + 260 + 48*(score_len-1), int(window_size[1]/2) - 60)
+        # score_point = game_utils.put_score(background_image, score_point, score)
+
+        # # ランクの表示
+        # image_utils.put_image(background_image, rank_image, (int(window_size[0]/2) - 110 - 24*(score_len-1), int(window_size[1]/2) - 170))
+        # rank_point = (int(window_size[0]/2) + 260, int(window_size[1]/2) - 170)
+        # game_utils.put_rank(background_image, rank_point, score)
 
         # プレイの選択
         if play_mode == 0:
