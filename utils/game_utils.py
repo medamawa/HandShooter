@@ -355,7 +355,7 @@ def put_got_score(image, point, score):
 
 
 # ランクの表示
-def put_rank(image, point, score):
+def put_rank(image, point, score, conversion = True):
     '''
     C  : 0 - 300
     B  : 300 - 800
@@ -379,7 +379,8 @@ def put_rank(image, point, score):
 
 
     rank_image = cv2.imread(f'src/rank/{rank}.png', cv2.IMREAD_UNCHANGED)
-    rank_image = cv2.cvtColor(rank_image, cv2.COLOR_BGRA2RGBA)
+    if conversion:
+        rank_image = cv2.cvtColor(rank_image, cv2.COLOR_BGRA2RGBA)
 
     point = (point[0] - rank_image.shape[1]/2, point[1])
     image_utils.put_image(image, rank_image, point)

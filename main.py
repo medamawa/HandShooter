@@ -25,13 +25,13 @@ def main():
     cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     # タイトル画像の読み込み
-    rand = np.random.randint(0, 4)
+    rand = np.random.randint(0, 5)
     title_image_path = f'src/title/{rand}.png'
     title_image = cv2.imread(title_image_path, cv2.IMREAD_UNCHANGED)
     title_image = image_utils.resize_with_height(title_image, int(window_size[1]/4))
 
     # ホーム画面の背景色
-    background_color = np.random.randint(0, 4)
+    background_color = np.random.randint(0, 5)
 
     # ホーム画面
     # -1: exit, 0: easy, 1: normal, 2: hard

@@ -40,7 +40,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
 
     # デバッグ用の変数
     debag_flag = False
-    ink_color = np.random.randint(0, 7)
+    ink_color = np.random.randint(0, 8)
     game_time = 120
     
 
@@ -181,7 +181,7 @@ def game(window_name, window_size, title_image, mp_info, range_multiplier, play_
                 if bang_flag:
                     if bang_now_flag:
                         # inkの種類をランダムに決定
-                        ink_type = np.random.randint(0, 2)
+                        ink_type = np.random.randint(0, 3)
                     
                     game_utils.put_ink(image, window_size, bang_point, ink_type, ink_color)
 

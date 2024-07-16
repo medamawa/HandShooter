@@ -35,7 +35,7 @@ def home(window_name, window_size, title_image, background_color):
         background_image = home_utils.animate_background(background_base, background_color, window_size, (now - start_time))
 
         # タイトル画像の表示
-        image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 100))
+        image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 80))
 
         # プレイの選択
         if play_mode == 0:

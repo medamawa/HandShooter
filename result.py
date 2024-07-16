@@ -40,9 +40,9 @@ def result(window_name, window_size, title_image, background_color, score, play_
         # タイトル画像の表示
         # image_utils.put_image(background_image, title_image, (int(window_size[0]/2), int(window_size[1]/2) - 100))
 
-        # スコアの表示
+        # スコアとランクの表示
         score_len = len(str(score))
-        game_utils.put_rank(background_image, (int(window_size[0]/2) - 40 - 24*(score_len), int(window_size[1]/2) - 60), score)
+        game_utils.put_rank(background_image, (int(window_size[0]/2) - 40 - 24*(score_len), int(window_size[1]/2) - 60), score, conversion=False)
         score_point = (int(window_size[0]/2) + 80 + 48*(score_len), int(window_size[1]/2) - 60)
         score_point = game_utils.put_score(background_image, score_point, score)
 
