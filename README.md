@@ -96,14 +96,26 @@ python main.py
 - 様々なパラメータを持った敵キャラを用意することで、賑やかで変動性が高いゲーム画面を構成できる
 - 敵キャラは色ごとにパラメータをある程度拘束している。この色は「この色は強そう・弱そう」という感覚的な指標に合うように選んでいる。こうすることでプレイヤーに「このキャラは強いだろうから、狙えば大きなリターンが得られる」などと言った共通認識を持ってもらうことができる
 
+<table>
+    <tr>
+        <td><img width="300" alt="easy" src="src/README/easy.gif"></br><center>easy</center></td>
+        <td><img width="300" alt="normal" src="src/README/normal.gif"></br><center>normal</center></td>
+        <td><img width="300" alt="hard" src="src/README/hard.gif"></br><center>hard</center></td>
+    </tr>
+</table>
+
 - 人差し指の角度情報から射撃判定を行っている
 - 人差し指の延長線上で、指の先端から指の長さの定数倍離れた場所に照準される。この照準位置には常にレティクルが表示されているので、直感的に狙いを定めることができる
 - 一つ前のフレームのデータを保持しておくことで、射撃判定や照準位置を正確に計算している
+
+<img width="600" alt="aiming" src="src/README/aiming.gif">
 
 - 射撃後、0.5秒待ってから着弾するように実装している。これにより、射撃感が高まるのに加え、ターゲットを狙って打つ難しさが増すのでゲーム性が高まる
 - 射撃後、0.8秒間は射撃できない。これにより連射を防いでゲーム性を高めている
 - 着弾すると、その地点に銃痕（インク痕）が表示される。これは0.3秒間継続される。これにより、どこに着弾したか視覚的に確認できる
 - 敵に命中した場合は、敵を撃たれたパターンの素材に変えることで、命中を視覚的に確認できる
+
+<img width="600" alt="shooting" src="src/README/shooting.gif">
 
 - ゲームに制限時間を設けている
 - 現在のスコアが表示されている。スコアが加算された場合には、何点加算されたかが分かるように表示している。こうすることで、「どのキャラが点数高いか・コスパがいいか」を把握できるようになるので、戦略を立てることができる
@@ -178,7 +190,7 @@ python main.py
 
 ## Target
 | target | score | size | speed |
-| --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: |
 | <img width="100" alt="squid_0" src="src/target/squid/0.png"> | 100p | 100 | 10 |
 | <img width="100" alt="squid_1" src="src/target/squid/1.png"> | 150p | 120 | 15 |
 | <img width="100" alt="squid_2" src="src/target/squid/2.png"> | 200p | 80 | 25 |
