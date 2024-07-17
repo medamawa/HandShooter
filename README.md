@@ -1,7 +1,8 @@
 # Hand Shooter
 
-<img height="100" alt="title" src="src/title/3.png">
-
+<p align="center">
+    <img width="800" alt="title" src="src/title/3.png">
+</p>
 
 ## How to play
 
