@@ -96,13 +96,9 @@ python main.py
 - 様々なパラメータを持った敵キャラを用意することで、賑やかで変動性が高いゲーム画面を構成できる
 - 敵キャラは色ごとにパラメータをある程度拘束している。この色は「この色は強そう・弱そう」という感覚的な指標に合うように選んでいる。こうすることでプレイヤーに「このキャラは強いだろうから、狙えば大きなリターンが得られる」などと言った共通認識を持ってもらうことができる
 
-<table>
-    <tr>
-        <td><img width="300" alt="easy" src="src/README/easy.gif"></br><center>easy</center></td>
-        <td><img width="300" alt="normal" src="src/README/normal.gif"></br><center>normal</center></td>
-        <td><img width="300" alt="hard" src="src/README/hard.gif"></br><center>hard</center></td>
-    </tr>
-</table>
+| <img width="300" alt="easy" src="src/README/easy.gif"> | <img width="300" alt="normal" src="src/README/normal.gif"> | <img width="300" alt="hard" src="src/README/hard.gif"> |
+| :---: | :---: | :---: |
+| easy | normal | hard |
 
 - 人差し指の角度情報から射撃判定を行っている
 - 人差し指の延長線上で、指の先端から指の長さの定数倍離れた場所に照準される。この照準位置には常にレティクルが表示されているので、直感的に狙いを定めることができる
