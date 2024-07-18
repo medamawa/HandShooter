@@ -168,6 +168,12 @@ python main.py
 <img width="600" alt="result" src="src/README/result.gif">
 
 
+## flow
+
+| main | game |
+| :---: | :---: |
+| <img width="300" alt="home_3" src="src/README/main.png"> | <img width="300" alt="home_4" src="src/README/game.png"> |
+
 ## Color
 
 ### title, button
